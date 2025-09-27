@@ -67,11 +67,11 @@ export default function ChatView({
             <selectedSubject.icon className="h-8 w-8 text-primary" />
           </div>
           <CardTitle className="font-headline">
-            {selectedSubject.label} Tutor
+            Gia sư {selectedSubject.label}
           </CardTitle>
           <CardDescription>
-            Ask me anything about {selectedSubject.label}. I'm here to help you
-            learn and understand.
+            Hỏi tôi bất cứ điều gì về {selectedSubject.label}. Tôi ở đây để giúp bạn
+            học và hiểu.
           </CardDescription>
         </CardHeader>
       </Card>
@@ -122,7 +122,7 @@ export default function ChatView({
                           <div>
                             <Separator className="my-2" />
                             <h4 className="font-semibold text-sm mb-2">
-                              Suggested Resources:
+                              Tài nguyên được đề xuất:
                             </h4>
                             <ul className="space-y-1 text-sm list-disc pl-4">
                               {message.resources.map((res, i) => (
@@ -157,7 +157,7 @@ export default function ChatView({
                             ) : (
                               <Sparkles className="mr-2 h-4 w-4" />
                             )}
-                            Suggest Resources
+                            Gợi ý tài nguyên
                           </Button>
                         )}
                       </div>
@@ -182,7 +182,7 @@ export default function ChatView({
                   <div className="max-w-xl rounded-lg p-4 bg-card border">
                     <div className="flex items-center space-x-2">
                       <LoaderCircle className="h-5 w-5 animate-spin" />
-                      <p>Thinking...</p>
+                      <p>Đang suy nghĩ...</p>
                     </div>
                   </div>
                 </div>
@@ -197,7 +197,7 @@ export default function ChatView({
           className="relative max-w-3xl mx-auto"
         >
           <Textarea
-            placeholder={`Ask a question about ${selectedSubject.label}...`}
+            placeholder={`Đặt câu hỏi về ${selectedSubject.label}...`}
             className="w-full pr-16 min-h-[48px] resize-none"
             value={question}
             onChange={(e) => setQuestion(e.target.value)}

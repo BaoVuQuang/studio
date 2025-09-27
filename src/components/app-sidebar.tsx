@@ -50,16 +50,16 @@ export default function AppSidebar({
             <h2 className="font-headline text-lg font-semibold tracking-tight">
               StudyBuddy AI
             </h2>
-            <p className="text-sm text-muted-foreground">Your Learning Assistant</p>
+            <p className="text-sm text-muted-foreground">Trợ lý học tập của bạn</p>
           </div>
         </div>
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Subject</SidebarGroupLabel>
+          <SidebarGroupLabel>Môn học</SidebarGroupLabel>
           <Select value={selectedSubject} onValueChange={onSubjectChange}>
             <SelectTrigger className="w-full">
-              <SelectValue placeholder="Select a subject" />
+              <SelectValue placeholder="Chọn một môn học" />
             </SelectTrigger>
             <SelectContent>
               {subjects.map((subject) => (
@@ -76,7 +76,7 @@ export default function AppSidebar({
         <SidebarSeparator />
         <SidebarGroup>
           <div className="flex items-center justify-between">
-            <SidebarGroupLabel>History</SidebarGroupLabel>
+            <SidebarGroupLabel>Lịch sử</SidebarGroupLabel>
             <Button
               variant="ghost"
               size="icon"
@@ -84,7 +84,7 @@ export default function AppSidebar({
               onClick={onNewChat}
             >
               <Plus className="h-4 w-4" />
-              <span className="sr-only">New Chat</span>
+              <span className="sr-only">Trò chuyện mới</span>
             </Button>
           </div>
           <SidebarMenu>
@@ -111,7 +111,7 @@ export default function AppSidebar({
               ))
             ) : (
               <div className="p-2 text-sm text-muted-foreground">
-                No history yet. Start a new conversation!
+                Chưa có lịch sử. Bắt đầu một cuộc trò chuyện mới!
               </div>
             )}
           </SidebarMenu>

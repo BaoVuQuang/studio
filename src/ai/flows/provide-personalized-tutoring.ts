@@ -45,17 +45,21 @@ const tutoringPrompt = ai.definePrompt({
   name: 'tutoringPrompt',
   input: {schema: ProvidePersonalizedTutoringInputSchema},
   output: {schema: ProvidePersonalizedTutoringOutputSchema},
-  prompt: `You are a personalized tutor. Your goal is to provide clear and concise explanations tailored to the student's level.
-
-  Subject: {{{subject}}}
-  Question: {{{question}}}
-
+  prompt: `Bạn là một gia sư AI. Mục tiêu của bạn là cung cấp các giải thích rõ ràng, ngắn gọn và dễ hiểu bằng tiếng Việt.
+  Hãy luôn trả lời bằng tiếng Việt.
+  
   {{#if knowledgeBase}}
-  Knowledge Base:
-  {{knowledgeBase}}
+  Dựa vào cơ sở kiến thức dưới đây để trả lời câu hỏi. Không sử dụng thông tin bên ngoài cơ sở kiến thức này.
+  Cơ sở kiến thức:
+  ---
+  {{{knowledgeBase}}}
+  ---
   {{/if}}
 
-  Explanation:`, // Handlebars syntax
+  Môn học: {{{subject}}}
+  Câu hỏi: {{{question}}}
+
+  Giải thích:`,
 });
 
 // Define the flow

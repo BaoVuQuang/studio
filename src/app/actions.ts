@@ -3,16 +3,18 @@
 
 import { providePersonalizedTutoring } from '@/ai/flows/provide-personalized-tutoring';
 import { suggestLearningResources } from '@/ai/flows/suggest-learning-resources';
+import { getKnowledgeBase } from '@/lib/knowledge-base';
 
 export async function getTutorResponse(subject: string, question: string) {
   try {
-    const response = await providePersonalizedTutoring({ subject, question });
+    const knowledgeBase = getKnowledgeBase(subject);
+    const response = await providePersonalizedTutoring({ subject, question, knowledgeBase });
     return { success: true, explanation: response.explanation };
   } catch (error) {
     console.error(error);
     return {
       success: false,
-      error: 'An error occurred while getting a response. Please try again.',
+      error: 'Đã có lỗi xảy ra khi nhận phản hồi. Vui lòng thử lại.',
     };
   }
 }
@@ -25,7 +27,7 @@ export async function getResourceSuggestions(topic: string, needs: string) {
     console.error(error);
     return {
       success: false,
-      error: 'An error occurred while suggesting resources. Please try again.',
+      error: 'Đã có lỗi xảy ra khi gợi ý tài nguyên. Vui lòng thử lại.',
     };
   }
 }

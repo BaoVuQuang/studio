@@ -23,13 +23,13 @@ import AppSidebar from '@/components/app-sidebar';
 import ChatView from '@/components/chat-view';
 
 const subjects: Subject[] = [
-  { value: 'math', label: 'Math', icon: Calculator },
-  { value: 'science', label: 'Science', icon: FlaskConical },
-  { value: 'history', label: 'History', icon: Landmark },
-  { value: 'literature', label: 'Literature', icon: BookOpen },
+  { value: 'math', label: 'Toán học', icon: Calculator },
+  { value: 'science', label: 'Khoa học', icon: FlaskConical },
+  { value: 'history', label: 'Lịch sử', icon: Landmark },
+  { value: 'literature', label: 'Văn học', icon: BookOpen },
   {
     value: 'computer-science',
-    label: 'Computer Science',
+    label: 'Khoa học máy tính',
     icon: Code,
   },
 ];
@@ -97,7 +97,7 @@ export default function StudyBuddyClient() {
       } else {
         toast({
           variant: 'destructive',
-          title: 'Error',
+          title: 'Lỗi',
           description: res.error,
         });
         setChatMessages((prev) => prev.slice(0, -1));
@@ -131,7 +131,7 @@ export default function StudyBuddyClient() {
       } else {
         toast({
           variant: 'destructive',
-          title: 'Error',
+          title: 'Lỗi',
           description: res.error,
         });
         setChatMessages((prev) =>
