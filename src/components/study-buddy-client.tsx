@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import {
   BookOpen,
   Calculator,
@@ -54,6 +54,17 @@ export default function StudyBuddyClient() {
   const [documentName, setDocumentName] = useState<string | null>(null);
 
   const { toast } = useToast();
+
+  const groupedHistory = useMemo(() => {
+    return history.reduce((acc, conv) => {
+      const subjectLabel = subjects.find(s => s.value === conv.subject)?.label || 'Không xác định';
+      if (!acc[subjectLabel]) {
+        acc[subjectLabel] = [];
+      }
+      acc[subjectLabel].push(conv);
+      return acc;
+    }, {} as Record<string, Conversation[]>);
+  }, [history]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -213,6 +224,7 @@ export default function StudyBuddyClient() {
             handleNewChat();
           }}
           history={history}
+          groupedHistory={groupedHistory}
           onHistoryClick={handleHistoryClick}
           onNewChat={() => {
             handleNewChat();

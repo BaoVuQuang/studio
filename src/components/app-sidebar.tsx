@@ -23,6 +23,7 @@ import { Button } from '@/components/ui/button';
 import type { Conversation, Subject, EducationLevel } from '@/lib/types';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from './ui/accordion';
 
 interface AppSidebarProps {
   levels: { value: EducationLevel, label: string }[];
@@ -32,6 +33,7 @@ interface AppSidebarProps {
   selectedSubject: string;
   onSubjectChange: (subject: string) => void;
   history: Conversation[];
+  groupedHistory: Record<string, Conversation[]>;
   onHistoryClick: (conversation: Conversation) => void;
   onNewChat: () => void;
 }
@@ -44,6 +46,7 @@ export default function AppSidebar({
   selectedSubject,
   onSubjectChange,
   history,
+  groupedHistory,
   onHistoryClick,
   onNewChat,
 }: AppSidebarProps) {
@@ -109,26 +112,36 @@ export default function AppSidebar({
           </div>
           <SidebarMenu>
             {history.length > 0 ? (
-              history.map((conv) => (
-                <SidebarMenuItem key={conv.id}>
-                  <SidebarMenuButton
-                    onClick={() => onHistoryClick(conv)}
-                    className="h-auto py-2"
-                  >
-                    <div className="flex flex-col gap-1 items-start w-full">
-                      <span className="text-xs text-muted-foreground">
-                        {
-                          subjects.find((s) => s.value === conv.subject)
-                            ?.label
-                        } ({levels.find(l => l.value === conv.level)?.label})
-                      </span>
-                      <span className="block truncate w-full text-wrap text-sm">
-                        {conv.question}
-                      </span>
-                    </div>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))
+              <Accordion type="multiple" className="w-full">
+                {Object.entries(groupedHistory).map(([subjectLabel, convs]) => (
+                  <AccordionItem value={subjectLabel} key={subjectLabel}>
+                    <AccordionTrigger className="text-sm font-medium hover:no-underline py-2">
+                      {subjectLabel}
+                    </AccordionTrigger>
+                    <AccordionContent>
+                      <SidebarMenu className="pl-2 border-l">
+                      {convs.map((conv) => (
+                        <SidebarMenuItem key={conv.id}>
+                          <SidebarMenuButton
+                            onClick={() => onHistoryClick(conv)}
+                            className="h-auto py-2"
+                          >
+                            <div className="flex flex-col gap-1 items-start w-full">
+                              <span className="text-xs text-muted-foreground">
+                                {levels.find(l => l.value === conv.level)?.label}
+                              </span>
+                              <span className="block truncate w-full text-wrap text-sm">
+                                {conv.question}
+                              </span>
+                            </div>
+                          </SidebarMenuButton>
+                        </SidebarMenuItem>
+                      ))}
+                      </SidebarMenu>
+                    </AccordionContent>
+                  </AccordionItem>
+                ))}
+              </Accordion>
             ) : (
               <div className="p-2 text-sm text-muted-foreground">
                 Chưa có lịch sử. Bắt đầu một cuộc trò chuyện mới!
