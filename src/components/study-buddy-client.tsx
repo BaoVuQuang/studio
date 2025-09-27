@@ -4,7 +4,6 @@
 import { useState, useCallback } from 'react';
 import {
   BookOpen,
-  BrainCircuit,
   Calculator,
   Code,
   FlaskConical,
@@ -16,7 +15,7 @@ import {
   Sidebar,
   SidebarInset,
 } from '@/components/ui/sidebar';
-import type { Conversation, Message, Subject } from '@/lib/types';
+import type { Conversation, Message, Subject, EducationLevel } from '@/lib/types';
 import { getResourceSuggestions, getTutorResponse } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
 import AppSidebar from '@/components/app-sidebar';
@@ -34,7 +33,13 @@ const subjects: Subject[] = [
   },
 ];
 
+const educationLevels: { value: EducationLevel, label: string }[] = [
+    { value: 'thcs', label: 'Trung học cơ sở (6-9)'},
+    { value: 'thpt', label: 'Trung học phổ thông (10-12)'},
+]
+
 export default function StudyBuddyClient() {
+  const [selectedLevel, setSelectedLevel] = useState<EducationLevel>('thpt');
   const [selectedSubject, setSelectedSubject] = useState<string>(
     subjects[0].value
   );
@@ -61,6 +66,7 @@ export default function StudyBuddyClient() {
       },
     ];
     setChatMessages(newMessages);
+    setSelectedLevel(conversation.level);
     setSelectedSubject(conversation.subject);
   };
 
@@ -76,7 +82,7 @@ export default function StudyBuddyClient() {
       };
       setChatMessages((prev) => [...prev, userMessage]);
 
-      const res = await getTutorResponse(selectedSubject, question);
+      const res = await getTutorResponse(selectedLevel, selectedSubject, question);
       setIsLoading(false);
 
       if (res.success && res.explanation) {
@@ -89,6 +95,7 @@ export default function StudyBuddyClient() {
 
         const newConversation: Conversation = {
           id: `conv-${Date.now()}`,
+          level: selectedLevel,
           subject: selectedSubject,
           question,
           answer: res.explanation,
@@ -103,7 +110,7 @@ export default function StudyBuddyClient() {
         setChatMessages((prev) => prev.slice(0, -1));
       }
     },
-    [isLoading, selectedSubject, toast]
+    [isLoading, selectedLevel, selectedSubject, toast]
   );
 
   const handleSuggestResources = useCallback(
@@ -150,6 +157,9 @@ export default function StudyBuddyClient() {
     <SidebarProvider>
       <Sidebar>
         <AppSidebar
+          levels={educationLevels}
+          selectedLevel={selectedLevel}
+          onLevelChange={setSelectedLevel}
           subjects={subjects}
           selectedSubject={selectedSubject}
           onSubjectChange={setSelectedSubject}

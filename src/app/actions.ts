@@ -4,10 +4,11 @@
 import { providePersonalizedTutoring } from '@/ai/flows/provide-personalized-tutoring';
 import { suggestLearningResources } from '@/ai/flows/suggest-learning-resources';
 import { getKnowledgeBase } from '@/lib/knowledge-base';
+import type { EducationLevel } from '@/lib/types';
 
-export async function getTutorResponse(subject: string, question: string) {
+export async function getTutorResponse(level: EducationLevel, subject: string, question: string) {
   try {
-    const knowledgeBase = getKnowledgeBase(subject);
+    const knowledgeBase = getKnowledgeBase(level, subject);
     const response = await providePersonalizedTutoring({ subject, question, knowledgeBase });
     return { success: true, explanation: response.explanation };
   } catch (error) {

@@ -20,9 +20,14 @@ import {
   SidebarSeparator,
 } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
-import type { Conversation, Subject } from '@/lib/types';
+import type { Conversation, Subject, EducationLevel } from '@/lib/types';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Label } from '@/components/ui/label';
 
 interface AppSidebarProps {
+  levels: { value: EducationLevel, label: string }[];
+  selectedLevel: EducationLevel;
+  onLevelChange: (level: EducationLevel) => void;
   subjects: Subject[];
   selectedSubject: string;
   onSubjectChange: (subject: string) => void;
@@ -32,6 +37,9 @@ interface AppSidebarProps {
 }
 
 export default function AppSidebar({
+  levels,
+  selectedLevel,
+  onLevelChange,
   subjects,
   selectedSubject,
   onSubjectChange,
@@ -56,9 +64,21 @@ export default function AppSidebar({
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
+            <SidebarGroupLabel>Cấp học</SidebarGroupLabel>
+            <RadioGroup value={selectedLevel} onValueChange={onLevelChange as (value: string) => void} className="mt-2 space-y-2">
+                {levels.map(level => (
+                    <div key={level.value} className="flex items-center space-x-2">
+                        <RadioGroupItem value={level.value} id={`level-${level.value}`} />
+                        <Label htmlFor={`level-${level.value}`} className="font-normal">{level.label}</Label>
+                    </div>
+                ))}
+            </RadioGroup>
+        </SidebarGroup>
+        <SidebarSeparator/>
+        <SidebarGroup>
           <SidebarGroupLabel>Môn học</SidebarGroupLabel>
           <Select value={selectedSubject} onValueChange={onSubjectChange}>
-            <SelectTrigger className="w-full">
+            <SelectTrigger className="w-full mt-2">
               <SelectValue placeholder="Chọn một môn học" />
             </SelectTrigger>
             <SelectContent>
@@ -100,7 +120,7 @@ export default function AppSidebar({
                         {
                           subjects.find((s) => s.value === conv.subject)
                             ?.label
-                        }
+                        } ({levels.find(l => l.value === conv.level)?.label})
                       </span>
                       <span className="block truncate w-full text-wrap text-sm">
                         {conv.question}

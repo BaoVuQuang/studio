@@ -1,95 +1,20 @@
-const knowledgeBase: Record<string, string> = {
-    math: `
-  Chương 1: MỆNH ĐỀ - TẬP HỢP
-  - Mệnh đề: Là một khẳng định đúng hoặc một khẳng định sai.
-  - Mệnh đề phủ định (của P, kí hiệu là P̅): Nếu P đúng thì P̅ sai, nếu P sai thì P̅ đúng.
-  - Mệnh đề kéo theo (P ⇒ Q): Chỉ sai khi P đúng và Q sai.
-  - Mệnh đề tương đương (P ⇔ Q): Đúng khi P và Q cùng đúng hoặc cùng sai.
-  - Tập hợp: Một sự sưu tập các đối tượng.
-  - Các phép toán tập hợp:
-    + Giao (A ∩ B): Gồm các phần tử thuộc cả A và B.
-    + Hợp (A ∪ B): Gồm các phần tử thuộc A hoặc thuộc B.
-    + Hiệu (A \\ B): Gồm các phần tử thuộc A nhưng không thuộc B.
-    + Phần bù (C_E A): Là E \\ A, khi A là tập con của E.
+// src/lib/knowledge-base.ts
+import { knowledgeBase as thcsKnowledgeBase } from '@/lib/knowledge-base/thcs';
+import { knowledgeBase as thptKnowledgeBase } from '@/lib/knowledge-base/thpt';
+import type { EducationLevel } from '@/lib/types';
 
-  Chương 2: HÀM SỐ BẬC NHẤT VÀ BẬC HAI
-  - Hàm số: Một quy tắc cho mỗi giá trị x thuộc tập D có một và chỉ một giá trị y tương ứng. D là tập xác định.
-  - Hàm số bậc nhất y = ax + b (a ≠ 0):
-    + Đồng biến khi a > 0, nghịch biến khi a < 0.
-    + Đồ thị là một đường thẳng.
-  - Hàm số bậc hai y = ax² + bx + c (a ≠ 0):
-    + Đồ thị là một parabol có đỉnh I(-b/2a, -Δ/4a) và trục đối xứng x = -b/2a.
-    + Bề lõm hướng lên trên nếu a > 0, hướng xuống dưới nếu a < 0.
-  - Dấu của tam thức bậc hai f(x) = ax² + bx + c:
-    + Nếu Δ < 0: f(x) luôn cùng dấu với a.
-    + Nếu Δ = 0: f(x) luôn cùng dấu với a (trừ x = -b/2a).
-    + Nếu Δ > 0: f(x) có hai nghiệm x₁, x₂. "Trong trái, ngoài cùng" (Trong khoảng (x₁, x₂) f(x) trái dấu với a, ngoài khoảng này f(x) cùng dấu với a).
+const knowledgeBases = {
+  thcs: thcsKnowledgeBase,
+  thpt: thptKnowledgeBase,
+};
 
-  Chương 3: PHƯƠNG TRÌNH, HỆ PHƯƠNG TRÌNH
-  - Phương trình bậc nhất hai ẩn, phương trình bậc hai một ẩn.
-  - Định lý Vi-ét cho phương trình bậc hai ax² + bx + c = 0 (có 2 nghiệm x₁, x₂):
-    + Tổng nghiệm: S = x₁ + x₂ = -b/a
-    + Tích nghiệm: P = x₁ * x₂ = c/a
-
-  Chương 4: VECTƠ
-  - Vectơ: Là một đoạn thẳng có hướng. Kí hiệu AB→.
-  - Quy tắc ba điểm: AB→ + BC→ = AC→
-  - Quy tắc hình bình hành: Nếu ABCD là hình bình hành thì AB→ + AD→ = AC→.
-  - Tích của vectơ với một số: k * a→.
-  - Tích vô hướng của hai vectơ: a→ ⋅ b→ = |a→| * |b→| * cos(a→, b→).
-  - Phương pháp tọa độ trong mặt phẳng (Oxy):
-    + Cho A(xₐ, yₐ), B(xₑ, yₑ) thì AB→ = (xₑ - xₐ, yₑ - yₐ).
-    + |AB→| = √((xₑ - xₐ)² + (yₑ - yₐ)²).
-    + a→(u₁, u₂) ⋅ b→(v₁, v₂) = u₁v₁ + u₂v₂.
-    + a→ ⊥ b→ ⇔ u₁v₁ + u₂v₂ = 0.
-
-  Chương 5: HỆ THỨC LƯỢNG TRONG TAM GIÁC
-  - Cho tam giác ABC, cạnh a đối diện góc A, b đối diện góc B, c đối diện góc C. R là bán kính đường tròn ngoại tiếp, r là bán kính đường tròn nội tiếp, p là nửa chu vi.
-  - Định lý Cosin:
-    + a² = b² + c² - 2bc*cos(A)
-  - Định lý Sin:
-    + a/sin(A) = b/sin(B) = c/sin(C) = 2R
-  - Công thức diện tích (S):
-    + S = ½ * a * hₐ
-    + S = ½ * b * c * sin(A)
-    + S = p * r
-    + S = √(p(p-a)(p-b)(p-c)) (Công thức Heron)
-
-  Chương 6: THỐNG KÊ
-  - Số trung bình, trung vị, mốt.
-  - Phương sai và độ lệch chuẩn: Các số đo độ phân tán của mẫu số liệu.
-  `,
-    science: `
-  Nước (H₂O) là một hợp chất hóa học của oxy và hydro. Ở điều kiện tiêu chuẩn, nó là một chất lỏng không màu, không mùi, không vị.
-  
-  Các trạng thái của nước:
-  - Rắn: Dưới 0°C (nước đá)
-  - Lỏng: Từ 0°C đến 100°C
-  - Khí: Trên 100°C (hơi nước)
-  `,
-    history: `
-  Cách mạng Tháng Tám năm 1945 là một cuộc cách mạng do Đảng Cộng sản Việt Nam lãnh đạo để giành chính quyền từ tay phát xít Nhật và thực dân Pháp, thành lập nước Việt Nam Dân chủ Cộng hòa.
-  
-  Sự kiện chính:
-  - Ngày 19/8/1945: Khởi nghĩa giành chính quyền tại Hà Nội.
-  - Ngày 2/9/1945: Chủ tịch Hồ Chí Minh đọc Tuyên ngôn Độc lập tại Quảng trường Ba Đình.
-  `,
-    literature: `
-  "Truyện Kiều" của Nguyễn Du là một kiệt tác của văn học Việt Nam. Tác phẩm được viết bằng chữ Nôm, theo thể thơ lục bát.
-  
-  Nội dung chính: Kể về cuộc đời 15 năm lưu lạc, chìm nổi của Thúy Kiều, một người con gái tài sắc vẹn toàn nhưng số phận éo le.
-  `,
-    'computer-science': `
-  React là một thư viện JavaScript mã nguồn mở để xây dựng giao diện người dùng (UI).
-  
-  Các khái niệm cốt lõi:
-  - Components: Các khối xây dựng độc lập và có thể tái sử dụng.
-  - JSX: Một phần mở rộng cú pháp cho JavaScript, cho phép viết mã giống HTML trong các tệp JavaScript.
-  - State & Props: Dữ liệu quản lý trạng thái của component và dữ liệu được truyền từ component cha xuống component con.
-  `,
-  };
-  
-  export function getKnowledgeBase(subject: string): string | undefined {
-    return knowledgeBase[subject];
+export function getKnowledgeBase(
+  level: EducationLevel,
+  subject: string
+): string | undefined {
+  const baseForLevel = knowledgeBases[level];
+  if (baseForLevel && subject in baseForLevel) {
+    return baseForLevel[subject as keyof typeof baseForLevel];
   }
-  
+  return undefined;
+}
