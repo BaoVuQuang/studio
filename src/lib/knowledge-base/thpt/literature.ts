@@ -2,29 +2,64 @@
 export const literature = `
 Kiến thức Ngữ văn Trung học phổ thông
 
-**Phần Đọc hiểu văn bản:**
-- Kỹ năng đọc hiểu văn bản văn học và văn bản thông tin.
-- Nhận biết, phân tích các chi tiết, đề tài, chủ đề, tư tưởng, thông điệp.
-- Phân tích đặc điểm của các thể loại: thơ (tự do, cách luật), truyện, kịch, kí.
-- Phân tích tác dụng của các yếu tố hình thức: ngôn ngữ, hình ảnh, biện pháp tu từ.
+**A. Phần Đọc hiểu văn bản:**
+- **Kỹ năng:**
+  + Nhận biết: Phương thức biểu đạt, phong cách ngôn ngữ, thể thơ, thao tác lập luận, các biện pháp tu từ.
+  + Thông hiểu: Hiểu nội dung chính của văn bản, ý nghĩa của các chi tiết, hình ảnh, câu chữ.
+  + Vận dụng: Trình bày suy nghĩ, quan điểm về một vấn đề đặt ra từ văn bản.
+- **Các loại văn bản thường gặp:**
+  + Văn bản văn học (thơ, truyện ngắn).
+  + Văn bản nghị luận (chính trị, xã hội, văn học).
+  + Văn bản thông tin/báo chí.
 
-**Phần Văn học:**
-- **Văn học dân gian:** Sử thi (Đăm Săn), Ca dao.
-- **Văn học Trung đại:**
-  + Thơ chữ Hán: "Thuật hoài" (Phạm Ngũ Lão), "Cảnh ngày hè" (Nguyễn Trãi).
-  + Thơ Nôm: "Nhàn" (Nguyễn Bỉnh Khiêm), "Độc Tiểu Thanh kí" (Nguyễn Du), thơ Hồ Xuân Hương.
-  + Phú: "Bình Ngô đại cáo" (Nguyễn Trãi).
-  + Truyện thơ: "Truyện Kiều" (Nguyễn Du).
-- **Văn học Hiện đại:**
-  + **Giai đoạn 1930-1945:** Thơ mới (Xuân Diệu, Huy Cận, Hàn Mặc Tử), Văn xuôi hiện thực (Nam Cao, Vũ Trọng Phụng, Ngô Tất Tố), Văn xuôi lãng mạn (Thạch Lam, Khái Hưng).
-  + **Giai đoạn 1945-1975:** Thơ kháng chiến chống Pháp và chống Mĩ (Tố Hữu, Quang Dũng, Nguyễn Khoa Điềm), Kịch (Vũ Như Tô), Truyện và Kí (Nguyễn Tuân, Nguyễn Minh Châu, Kim Lân).
-  + **Giai đoạn sau 1975:** "Hồn Trương Ba, da hàng thịt" (Lưu Quang Vũ).
-- **Văn học nước ngoài:** "Số phận con người" (Sô-lô-khốp), "Ông già và biển cả" (Hê-minh-uê).
+**B. Phần Làm văn:**
 
-**Phần Làm văn:**
-- **Nghị luận xã hội:** Viết đoạn văn hoặc bài văn về một tư tưởng, đạo lí hoặc một hiện tượng đời sống. Yêu cầu vận dụng kiến thức xã hội và kỹ năng lập luận.
-- **Nghị luận văn học:**
-  + Phân tích, cảm nhận một tác phẩm, đoạn trích thơ.
-  + Phân tích, cảm nhận một tác phẩm, đoạn trích văn xuôi (nhân vật, tình huống truyện, chi tiết nghệ thuật).
-  + So sánh hai tác phẩm, đoạn trích văn học.
+*   **Nghị luận xã hội (Viết đoạn văn khoảng 200 chữ):**
+    *   **Nghị luận về một tư tưởng, đạo lí:** Bàn về các phẩm chất, lối sống, quan niệm đúng đắn (lòng yêu nước, sự cống hiến, lòng nhân ái, ý chí nghị lực...).
+    *   **Nghị luận về một hiện tượng đời sống:** Bàn về các vấn đề thời sự, xã hội (ô nhiễm môi trường, bạo lực học đường, văn hóa ứng xử, vai trò của internet...).
+
+*   **Nghị luận văn học (Viết bài văn hoàn chỉnh):**
+    *   **Phân tích/Cảm nhận về một tác phẩm, đoạn trích thơ.**
+    *   **Phân tích/Cảm nhận về một tác phẩm, đoạn trích văn xuôi:** tập trung vào nhân vật, tình huống truyện, chi tiết nghệ thuật, giá trị nhân đạo, giá trị hiện thực.
+    *   **So sánh hai tác phẩm, đoạn trích, nhân vật văn học** để làm nổi bật sự tương đồng và khác biệt, từ đó nhận xét về phong cách tác giả hoặc đặc điểm giai đoạn văn học.
+
+**C. Phần Văn học (Các tác phẩm trọng tâm):**
+
+*   **Lớp 10:**
+    *   **Sử thi:** *Đăm Săn*, *Ô-đi-xê*.
+    *   **Thần thoại:** *Uy-lít-xơ trở về*.
+    *   **Truyền thuyết:** *An Dương Vương và Mị Châu, Trọng Thuỷ*.
+    *   **Thơ trung đại:** *Thuật hoài* (Phạm Ngũ Lão), *Cảnh ngày hè* (Nguyễn Trãi), *Nhàn* (Nguyễn Bỉnh Khiêm), *Độc Tiểu Thanh kí* (Nguyễn Du).
+    *   **Phú:** *Bình Ngô đại cáo* (Nguyễn Trãi).
+    *   **Truyện:** *Chuyện chức phán sự đền Tản Viên* (Nguyễn Dữ).
+
+*   **Lớp 11:**
+    *   **Thơ trung đại:** *Tự tình (bài II)* (Hồ Xuân Hương), *Câu cá mùa thu* (Nguyễn Khuyến), *Thương vợ* (Trần Tế Xương).
+    *   **Văn tế:** *Văn tế nghĩa sĩ Cần Giuộc* (Nguyễn Đình Chiểu).
+    *   **Thơ hiện đại (Giai đoạn 1930-1945):**
+        *   *Vội vàng* (Xuân Diệu).
+        *   *Tràng giang* (Huy Cận).
+        *   *Đây thôn Vĩ Dạ* (Hàn Mặc Tử).
+        *   *Từ ấy* (Tố Hữu).
+    *   **Truyện ngắn hiện đại:** *Hai đứa trẻ* (Thạch Lam), *Chữ người tử tù* (Nguyễn Tuân), *Chí Phèo* (Nam Cao), *Hạnh phúc của một tang gia* (Vũ Trọng Phụng).
+    *   **Văn học nước ngoài:** *Người trong bao* (Sê-khốp).
+
+*   **Lớp 12:**
+    *   **Tuyên ngôn:** *Tuyên ngôn Độc lập* (Hồ Chí Minh).
+    *   **Thơ hiện đại (Giai đoạn 1945 - nay):**
+        *   *Tây Tiến* (Quang Dũng).
+        *   *Việt Bắc* (Tố Hữu).
+        *   *Đất Nước* (trích trường ca *Mặt đường khát vọng*) (Nguyễn Khoa Điềm).
+        *   *Sóng* (Xuân Quỳnh).
+        *   *Đàn ghi ta của Lor-ca* (Thanh Thảo).
+    *   **Truyện và Kí (Giai đoạn 1945 - nay):**
+        *   *Người lái đò Sông Đà* (Nguyễn Tuân).
+        *   *Ai đã đặt tên cho dòng sông?* (Hoàng Phủ Ngọc Tường).
+        *   *Vợ chồng A Phủ* (Tô Hoài).
+        *   *Vợ nhặt* (Kim Lân).
+        *   *Rừng xà nu* (Nguyễn Trung Thành).
+        *   *Những đứa con trong gia đình* (Nguyễn Thi).
+        *   *Chiếc thuyền ngoài xa* (Nguyễn Minh Châu).
+    *   **Kịch:** *Hồn Trương Ba, da hàng thịt* (Lưu Quang Vũ).
+    *   **Văn học nước ngoài:** *Số phận con người* (Sô-lô-khốp), *Ông già và biển cả* (Hê-minh-uê).
 `;
