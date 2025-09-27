@@ -9,6 +9,9 @@ import {
   Scale,
   Globe,
   Languages,
+  FlaskConical,
+  Beaker,
+  Dna,
 } from 'lucide-react';
 
 import {
@@ -24,6 +27,9 @@ import ChatView from '@/components/chat-view';
 
 const subjects: Subject[] = [
   { value: 'math', label: 'Toán học', icon: Calculator },
+  { value: 'physics', label: 'Vật lí', icon: FlaskConical },
+  { value: 'chemistry', label: 'Hóa học', icon: Beaker },
+  { value: 'biology', label: 'Sinh học', icon: Dna },
   { value: 'literature', label: 'Ngữ văn', icon: BookOpen },
   { value: 'history', label: 'Lịch sử', icon: Landmark },
   { value: 'geography', label: 'Địa lí', icon: Globe },
