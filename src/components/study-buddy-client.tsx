@@ -5,9 +5,10 @@ import { useState, useCallback } from 'react';
 import {
   BookOpen,
   Calculator,
-  Code,
-  FlaskConical,
   Landmark,
+  Scale,
+  Globe,
+  Languages,
 } from 'lucide-react';
 
 import {
@@ -23,14 +24,11 @@ import ChatView from '@/components/chat-view';
 
 const subjects: Subject[] = [
   { value: 'math', label: 'Toán học', icon: Calculator },
-  { value: 'science', label: 'Khoa học', icon: FlaskConical },
+  { value: 'literature', label: 'Ngữ văn', icon: BookOpen },
   { value: 'history', label: 'Lịch sử', icon: Landmark },
-  { value: 'literature', label: 'Văn học', icon: BookOpen },
-  {
-    value: 'computer-science',
-    label: 'Khoa học máy tính',
-    icon: Code,
-  },
+  { value: 'geography', label: 'Địa lí', icon: Globe },
+  { value: 'civics', label: 'GDCD', icon: Scale },
+  { value: 'english', label: 'Ngoại ngữ', icon: Languages },
 ];
 
 const educationLevels: { value: EducationLevel, label: string }[] = [

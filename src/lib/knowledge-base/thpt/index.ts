@@ -1,15 +1,17 @@
 // src/lib/knowledge-base/thpt/index.ts
 import { math } from './math';
-import { science } from './science';
-import { history } from './history';
 import { literature } from './literature';
-import { computerScience } from './computer-science';
+import { history } from './history';
+import { geography } from './geography';
+import { civics } from './civics';
+import { english } from './english';
 
 
 export const knowledgeBase = {
     math,
-    science,
-    history,
     literature,
-    'computer-science': computerScience
+    history,
+    geography,
+    'civics': civics,
+    'english': english
 };
