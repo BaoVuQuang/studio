@@ -1,11 +1,13 @@
 // src/lib/knowledge-base.ts
 import { knowledgeBase as thcsKnowledgeBase } from '@/lib/knowledge-base/thcs';
 import { knowledgeBase as thptKnowledgeBase } from '@/lib/knowledge-base/thpt';
+import { knowledgeBase as daihocKnowledgeBase } from '@/lib/knowledge-base/daihoc';
 import type { EducationLevel } from '@/lib/types';
 
 const knowledgeBases = {
   thcs: thcsKnowledgeBase,
   thpt: thptKnowledgeBase,
+  daihoc: daihocKnowledgeBase,
 };
 
 export function getKnowledgeBase(

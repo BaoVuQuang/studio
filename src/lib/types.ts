@@ -1,6 +1,6 @@
 import type { LucideIcon } from 'lucide-react';
 
-export type EducationLevel = 'thcs' | 'thpt';
+export type EducationLevel = 'thcs' | 'thpt' | 'daihoc';
 
 export type Subject = {
   value: string;

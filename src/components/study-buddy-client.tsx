@@ -33,13 +33,14 @@ const subjects: Subject[] = [
   { value: 'literature', label: 'Ngữ văn', icon: BookOpen },
   { value: 'history', label: 'Lịch sử', icon: Landmark },
   { value: 'geography', label: 'Địa lí', icon: Globe },
-  { value: 'civics', label: 'GDCD', icon: Scale },
+  { value: 'civics', label: 'GDCD/Kinh tế & PL', icon: Scale },
   { value: 'english', label: 'Ngoại ngữ', icon: Languages },
 ];
 
 const educationLevels: { value: EducationLevel, label: string }[] = [
     { value: 'thcs', label: 'Trung học cơ sở (6-9)'},
     { value: 'thpt', label: 'Trung học phổ thông (10-12)'},
+    { value: 'daihoc', label: 'Đại học'},
 ]
 
 export default function StudyBuddyClient() {
