@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import {
   BookOpen,
   Calculator,
@@ -12,6 +12,10 @@ import {
   FlaskConical,
   Beaker,
   Dna,
+  Atom,
+  Sigma,
+  Lightbulb,
+  BookCopy,
 } from 'lucide-react';
 
 import {
@@ -25,7 +29,19 @@ import { useToast } from '@/hooks/use-toast';
 import AppSidebar from '@/components/app-sidebar';
 import ChatView from '@/components/chat-view';
 
-const subjects: Subject[] = [
+const thcsSubjects: Subject[] = [
+  { value: 'math', label: 'Toán học', icon: Calculator },
+  { value: 'physics', label: 'Vật lí', icon: FlaskConical },
+  { value: 'chemistry', label: 'Hóa học', icon: Beaker },
+  { value: 'biology', label: 'Sinh học', icon: Dna },
+  { value: 'literature', label: 'Ngữ văn', icon: BookOpen },
+  { value: 'history', label: 'Lịch sử', icon: Landmark },
+  { value: 'geography', label: 'Địa lí', icon: Globe },
+  { value: 'civics', label: 'GDCD', icon: Scale },
+  { value: 'english', label: 'Ngoại ngữ', icon: Languages },
+];
+
+const thptSubjects: Subject[] = [
   { value: 'math', label: 'Toán học', icon: Calculator },
   { value: 'physics', label: 'Vật lí', icon: FlaskConical },
   { value: 'chemistry', label: 'Hóa học', icon: Beaker },
@@ -37,14 +53,32 @@ const subjects: Subject[] = [
   { value: 'english', label: 'Ngoại ngữ', icon: Languages },
 ];
 
+const daihocSubjects: Subject[] = [
+    { value: 'math', label: 'Toán cao cấp (Giải tích, ĐSTT)', icon: Sigma },
+    { value: 'physics', label: 'Vật lí đại cương', icon: Atom },
+    { value: 'chemistry', label: 'Hóa học đại cương', icon: Beaker },
+    { value: 'biology', label: 'Sinh học đại cương', icon: Dna },
+    { value: 'civics', label: 'Các môn Lý luận chính trị', icon: BookCopy },
+    { value: 'english', label: 'Tiếng Anh học thuật/chuyên ngành', icon: Languages },
+];
+
+
 const educationLevels: { value: EducationLevel, label: string }[] = [
     { value: 'thcs', label: 'Trung học cơ sở (6-9)'},
     { value: 'thpt', label: 'Trung học phổ thông (10-12)'},
     { value: 'daihoc', label: 'Đại học'},
 ]
 
+const subjectMap: Record<EducationLevel, Subject[]> = {
+    thcs: thcsSubjects,
+    thpt: thptSubjects,
+    daihoc: daihocSubjects,
+};
+
+
 export default function StudyBuddyClient() {
   const [selectedLevel, setSelectedLevel] = useState<EducationLevel>('thpt');
+  const [subjects, setSubjects] = useState<Subject[]>(subjectMap[selectedLevel]);
   const [selectedSubject, setSelectedSubject] = useState<string>(
     subjects[0].value
   );
@@ -56,9 +90,18 @@ export default function StudyBuddyClient() {
 
   const { toast } = useToast();
 
+  useEffect(() => {
+    const newSubjects = subjectMap[selectedLevel];
+    setSubjects(newSubjects);
+    setSelectedSubject(newSubjects[0].value);
+    handleClearDocument();
+    handleNewChat();
+  }, [selectedLevel]);
+
   const groupedHistory = useMemo(() => {
     return history.reduce((acc, conv) => {
-      const subjectLabel = subjects.find(s => s.value === conv.subject)?.label || 'Không xác định';
+      const subjectList = subjectMap[conv.level] || [];
+      const subjectLabel = subjectList.find(s => s.value === conv.subject)?.label || 'Không xác định';
       if (!acc[subjectLabel]) {
         acc[subjectLabel] = [];
       }
@@ -214,8 +257,6 @@ export default function StudyBuddyClient() {
           selectedLevel={selectedLevel}
           onLevelChange={level => {
             setSelectedLevel(level);
-            handleClearDocument();
-            handleNewChat();
           }}
           subjects={subjects}
           selectedSubject={selectedSubject}
