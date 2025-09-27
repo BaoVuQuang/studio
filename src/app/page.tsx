@@ -1,3 +1,9 @@
+import StudyBuddyClient from '@/components/study-buddy-client';
+
 export default function Home() {
-  return <></>;
+  return (
+    <main>
+      <StudyBuddyClient />
+    </main>
+  );
 }
