@@ -6,9 +6,11 @@ import { suggestLearningResources } from '@/ai/flows/suggest-learning-resources'
 import { getKnowledgeBase } from '@/lib/knowledge-base';
 import type { EducationLevel } from '@/lib/types';
 
-export async function getTutorResponse(level: EducationLevel, subject: string, question: string) {
+export async function getTutorResponse(level: EducationLevel, subject: string, question: string, documentContent: string | null) {
   try {
-    const knowledgeBase = getKnowledgeBase(level, subject);
+    // If document content is provided, use it as the knowledge base.
+    // Otherwise, get knowledge base from pre-defined files.
+    const knowledgeBase = documentContent ?? getKnowledgeBase(level, subject);
     const response = await providePersonalizedTutoring({ subject, question, knowledgeBase });
     return { success: true, explanation: response.explanation };
   } catch (error) {

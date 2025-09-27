@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Bot, LoaderCircle, Send, Sparkles, User } from 'lucide-react';
+import { Bot, LoaderCircle, Send, Sparkles, User, Paperclip, X } from 'lucide-react';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -23,19 +23,26 @@ interface ChatViewProps {
   messages: Message[];
   isLoading: boolean;
   selectedSubject: Subject;
+  documentName: string | null;
   onSubmit: (question: string) => Promise<void>;
   onSuggestResources: (messageId: string, question: string) => Promise<void>;
+  onFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onClearDocument: () => void;
 }
 
 export default function ChatView({
   messages,
   isLoading,
   selectedSubject,
+  documentName,
   onSubmit,
   onSuggestResources,
+  onFileChange,
+  onClearDocument,
 }: ChatViewProps) {
   const [question, setQuestion] = useState('');
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (scrollAreaRef.current) {
@@ -70,8 +77,7 @@ export default function ChatView({
             Gia sư {selectedSubject.label}
           </CardTitle>
           <CardDescription>
-            Hỏi tôi bất cứ điều gì về {selectedSubject.label}. Tôi ở đây để giúp bạn
-            học và hiểu.
+            Hỏi tôi bất cứ điều gì về {selectedSubject.label}. Bạn cũng có thể áp tài liệu (.txt, .md) để hỏi đáp riêng về nội dung đó.
           </CardDescription>
         </CardHeader>
       </Card>
@@ -192,32 +198,56 @@ export default function ChatView({
         )}
       </div>
       <div className="p-4 border-t bg-background/80 backdrop-blur-sm">
-        <form
-          onSubmit={handleFormSubmit}
-          className="relative max-w-3xl mx-auto"
-        >
-          <Textarea
-            placeholder={`Đặt câu hỏi về ${selectedSubject.label}...`}
-            className="w-full pr-16 min-h-[48px] resize-none"
-            value={question}
-            onChange={(e) => setQuestion(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                handleFormSubmit(e as any);
-              }
-            }}
-            disabled={isLoading}
-          />
-          <Button
-            type="submit"
-            size="icon"
-            className="absolute right-3 top-1/2 -translate-y-1/2"
-            disabled={isLoading || !question.trim()}
+        <div className="relative max-w-3xl mx-auto">
+          {documentName && (
+            <div className="text-sm px-3 py-1 mb-2 bg-secondary rounded-full flex items-center justify-between max-w-sm">
+              <span className="truncate">Đang hỏi đáp về: <strong>{documentName}</strong></span>
+              <Button variant="ghost" size="icon" className="h-6 w-6 rounded-full" onClick={onClearDocument}>
+                <X className="h-4 w-4"/>
+                <span className="sr-only">Bỏ tài liệu</span>
+              </Button>
+            </div>
+          )}
+          <form
+            onSubmit={handleFormSubmit}
+            className="relative"
           >
-            <Send className="h-4 w-4" />
-          </Button>
-        </form>
+            <Textarea
+              placeholder={`Đặt câu hỏi về ${selectedSubject.label}...`}
+              className="w-full pr-24 min-h-[48px] resize-none"
+              value={question}
+              onChange={(e) => setQuestion(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault();
+                  handleFormSubmit(e as any);
+                }
+              }}
+              disabled={isLoading}
+            />
+             <input
+              type="file"
+              ref={fileInputRef}
+              onChange={onFileChange}
+              className="hidden"
+              accept=".txt,.md"
+            />
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 flex gap-2">
+              <Button type="button" variant="ghost" size="icon" onClick={() => fileInputRef.current?.click()} disabled={isLoading}>
+                <Paperclip className="h-4 w-4"/>
+                <span className="sr-only">Áp tài liệu</span>
+              </Button>
+              <Button
+                type="submit"
+                size="icon"
+                disabled={isLoading || !question.trim()}
+              >
+                <Send className="h-4 w-4" />
+                <span className="sr-only">Gửi</span>
+              </Button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   );

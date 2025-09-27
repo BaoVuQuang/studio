@@ -50,7 +50,39 @@ export default function StudyBuddyClient() {
   const [chatMessages, setChatMessages] = useState<Message[]>([]);
   const [history, setHistory] = useState<Conversation[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [documentContent, setDocumentContent] = useState<string | null>(null);
+  const [documentName, setDocumentName] = useState<string | null>(null);
+
   const { toast } = useToast();
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const content = event.target?.result as string;
+        setDocumentContent(content);
+        setDocumentName(file.name);
+        setChatMessages([]); // Clear chat when new document is loaded
+        toast({
+          title: "Tài liệu đã được tải lên",
+          description: `Bây giờ bạn có thể hỏi về nội dung của "${file.name}".`,
+        });
+      };
+      reader.readAsText(file);
+    }
+     // Reset file input to allow re-uploading the same file
+     e.target.value = '';
+  };
+
+  const handleClearDocument = () => {
+    setDocumentContent(null);
+    setDocumentName(null);
+    toast({
+      title: "Đã bỏ tài liệu",
+      description: "Cuộc trò chuyện đã quay lại chế độ bình thường.",
+    });
+  };
 
   const handleNewChat = () => {
     setChatMessages([]);
@@ -72,6 +104,8 @@ export default function StudyBuddyClient() {
     setChatMessages(newMessages);
     setSelectedLevel(conversation.level);
     setSelectedSubject(conversation.subject);
+    setDocumentContent(null);
+    setDocumentName(null);
   };
 
   const handleQuestionSubmit = useCallback(
@@ -86,7 +120,7 @@ export default function StudyBuddyClient() {
       };
       setChatMessages((prev) => [...prev, userMessage]);
 
-      const res = await getTutorResponse(selectedLevel, selectedSubject, question);
+      const res = await getTutorResponse(selectedLevel, selectedSubject, question, documentContent);
       setIsLoading(false);
 
       if (res.success && res.explanation) {
@@ -96,15 +130,18 @@ export default function StudyBuddyClient() {
           content: res.explanation,
         };
         setChatMessages((prev) => [...prev, assistantMessage]);
-
-        const newConversation: Conversation = {
-          id: `conv-${Date.now()}`,
-          level: selectedLevel,
-          subject: selectedSubject,
-          question,
-          answer: res.explanation,
-        };
-        setHistory((prev) => [newConversation, ...prev]);
+        
+        // Only save to history if not in document Q&A mode
+        if(!documentContent) {
+          const newConversation: Conversation = {
+            id: `conv-${Date.now()}`,
+            level: selectedLevel,
+            subject: selectedSubject,
+            question,
+            answer: res.explanation,
+          };
+          setHistory((prev) => [newConversation, ...prev]);
+        }
       } else {
         toast({
           variant: 'destructive',
@@ -114,7 +151,7 @@ export default function StudyBuddyClient() {
         setChatMessages((prev) => prev.slice(0, -1));
       }
     },
-    [isLoading, selectedLevel, selectedSubject, toast]
+    [isLoading, selectedLevel, selectedSubject, toast, documentContent]
   );
 
   const handleSuggestResources = useCallback(
@@ -163,13 +200,24 @@ export default function StudyBuddyClient() {
         <AppSidebar
           levels={educationLevels}
           selectedLevel={selectedLevel}
-          onLevelChange={setSelectedLevel}
+          onLevelChange={level => {
+            setSelectedLevel(level);
+            handleClearDocument();
+            handleNewChat();
+          }}
           subjects={subjects}
           selectedSubject={selectedSubject}
-          onSubjectChange={setSelectedSubject}
+          onSubjectChange={subject => {
+            setSelectedSubject(subject);
+            handleClearDocument();
+            handleNewChat();
+          }}
           history={history}
           onHistoryClick={handleHistoryClick}
-          onNewChat={handleNewChat}
+          onNewChat={() => {
+            handleNewChat();
+            handleClearDocument();
+          }}
         />
       </Sidebar>
       <SidebarInset>
@@ -179,8 +227,11 @@ export default function StudyBuddyClient() {
           selectedSubject={
             subjects.find((s) => s.value === selectedSubject) || subjects[0]
           }
+          documentName={documentName}
           onSubmit={handleQuestionSubmit}
           onSuggestResources={handleSuggestResources}
+          onFileChange={handleFileChange}
+          onClearDocument={handleClearDocument}
         />
       </SidebarInset>
     </SidebarProvider>
