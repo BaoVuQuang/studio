@@ -22,11 +22,12 @@ import {
   Sidebar,
   SidebarInset,
 } from '@/components/ui/sidebar';
-import type { Conversation, Message, Subject, EducationLevel } from '@/lib/types';
-import { getResourceSuggestions, getTutorResponse } from '@/app/actions';
+import type { Conversation, Message, Subject, EducationLevel, QuizData } from '@/lib/types';
+import { getResourceSuggestions, getTutorResponse, getQuiz } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
 import AppSidebar from '@/components/app-sidebar';
 import ChatView from '@/components/chat-view';
+import QuizDialog from './quiz-dialog';
 
 const thcsSubjects: Subject[] = [
   { value: 'math', label: 'Toán học', icon: Calculator },
@@ -89,6 +90,10 @@ export default function StudyBuddyClient() {
   const [isLoading, setIsLoading] = useState(false);
   const [documentContent, setDocumentContent] = useState<string | null>(null);
   const [documentName, setDocumentName] = useState<string | null>(null);
+  const [quizData, setQuizData] = useState<QuizData | null>(null);
+  const [isQuizDialogOpen, setIsQuizDialogOpen] = useState(false);
+  const [isGeneratingQuiz, setIsGeneratingQuiz] = useState(false);
+
 
   const { toast } = useToast();
 
@@ -251,6 +256,38 @@ export default function StudyBuddyClient() {
     [selectedSubject, toast]
   );
 
+  const handleGenerateQuiz = useCallback(
+    async (topic: string) => {
+      if (!topic) {
+        toast({
+            variant: 'destructive',
+            title: 'Lỗi',
+            description: 'Không có chủ đề để tạo câu hỏi ôn tập.',
+        });
+        return;
+      }
+      setIsGeneratingQuiz(true);
+      setIsQuizDialogOpen(true); // Open dialog with loading state
+      setQuizData(null);
+  
+      const res = await getQuiz(selectedLevel, selectedSubject, topic);
+      setIsGeneratingQuiz(false);
+  
+      if (res.success && res.data) {
+        setQuizData(res.data);
+      } else {
+        toast({
+          variant: 'destructive',
+          title: 'Lỗi',
+          description: res.error,
+        });
+        setIsQuizDialogOpen(false); // Close dialog on error
+      }
+    },
+    [selectedLevel, selectedSubject, toast]
+  );
+
+
   return (
     <SidebarProvider>
       <Sidebar>
@@ -286,10 +323,18 @@ export default function StudyBuddyClient() {
           documentName={documentName}
           onSubmit={handleQuestionSubmit}
           onSuggestResources={handleSuggestResources}
+          onGenerateQuiz={handleGenerateQuiz}
           onFileChange={handleFileChange}
           onClearDocument={handleClearDocument}
         />
       </SidebarInset>
+      <QuizDialog
+        isOpen={isQuizDialogOpen}
+        onOpenChange={setIsQuizDialogOpen}
+        quizData={quizData}
+        isLoading={isGeneratingQuiz}
+        subject={subjects.find((s) => s.value === selectedSubject) || subjects[0]}
+      />
     </SidebarProvider>
   );
 }

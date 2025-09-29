@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Bot, LoaderCircle, Send, Sparkles, User, Paperclip, X } from 'lucide-react';
+import { Bot, LoaderCircle, Send, Sparkles, User, Paperclip, X, RefreshCw } from 'lucide-react';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -26,6 +26,7 @@ interface ChatViewProps {
   documentName: string | null;
   onSubmit: (question: string) => Promise<void>;
   onSuggestResources: (messageId: string, question: string) => Promise<void>;
+  onGenerateQuiz: (topic: string) => void;
   onFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onClearDocument: () => void;
 }
@@ -37,6 +38,7 @@ export default function ChatView({
   documentName,
   onSubmit,
   onSuggestResources,
+  onGenerateQuiz,
   onFileChange,
   onClearDocument,
 }: ChatViewProps) {
@@ -61,9 +63,17 @@ export default function ChatView({
     }
   };
 
-  const getLastUserQuestion = () => {
-    const userMessages = messages.filter((msg) => msg.role === 'user');
-    return userMessages[userMessages.length - 1]?.content;
+  const getLastUserQuestion = (assistantMessageId: string) => {
+    const assistantMessageIndex = messages.findIndex(m => m.id === assistantMessageId);
+    if (assistantMessageIndex === -1) return '';
+
+    // Find the last user message before this assistant message
+    for (let i = assistantMessageIndex - 1; i >= 0; i--) {
+        if (messages[i].role === 'user') {
+            return messages[i].content;
+        }
+    }
+    return '';
   };
 
   const WelcomeScreen = () => (
@@ -123,7 +133,7 @@ export default function ChatView({
                   >
                     <p className="whitespace-pre-wrap">{message.content}</p>
                     {message.role === 'assistant' && (
-                      <div className="mt-4">
+                      <div className="mt-4 flex items-center gap-2">
                         {message.resources ? (
                           <div>
                             <Separator className="my-2" />
@@ -149,11 +159,11 @@ export default function ChatView({
                           <Button
                             variant="ghost"
                             size="sm"
-                            className="text-accent hover:text-accent"
+                            className="text-accent hover:text-accent px-2"
                             onClick={() =>
                               onSuggestResources(
                                 message.id,
-                                getLastUserQuestion()
+                                getLastUserQuestion(message.id)
                               )
                             }
                             disabled={message.isSuggestingResources}
@@ -166,6 +176,16 @@ export default function ChatView({
                             Gợi ý tài nguyên
                           </Button>
                         )}
+                        <Separator orientation="vertical" className="h-6" />
+                         <Button
+                            variant="ghost"
+                            size="sm"
+                            className="text-accent hover:text-accent px-2"
+                            onClick={() => onGenerateQuiz(getLastUserQuestion(message.id))}
+                          >
+                            <RefreshCw className="mr-2 h-4 w-4" />
+                            Ôn tập
+                          </Button>
                       </div>
                     )}
                   </div>

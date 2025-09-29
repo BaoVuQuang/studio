@@ -1,4 +1,6 @@
 import type { LucideIcon } from 'lucide-react';
+import {type GenerateQuizOutput} from '@/ai/flows/generate-quiz';
+
 
 export type EducationLevel = 'thcs' | 'thpt' | 'daihoc';
 
@@ -17,9 +19,11 @@ export type Message = {
 };
 
 export type Conversation = {
-  id: string;
+  id:string;
   level: EducationLevel;
   subject: string;
   question: string;
   answer: string;
 };
+
+export type QuizData = GenerateQuizOutput;
