@@ -13,8 +13,10 @@ export async function getTutorResponse(level: EducationLevel, grade: string | un
     // Otherwise, get knowledge base from pre-defined files.
     const knowledgeBase = documentContent ?? getKnowledgeBase(level, subject, grade);
     const response = await providePersonalizedTutoring({ subject, question, knowledgeBase });
+    
     // Use the detailed explanation if available, otherwise use the general answer.
     const content = response.explanation || response.answer;
+    
     return { success: true, content: content };
   } catch (error) {
     console.error(error);
