@@ -14,8 +14,9 @@ export async function getTutorResponse(level: EducationLevel, grade: string | un
     const knowledgeBase = documentContent ?? getKnowledgeBase(level, subject, grade);
     const response = await providePersonalizedTutoring({ subject, question, knowledgeBase });
     
-    // Use the detailed explanation if available, otherwise use the general answer.
-    const content = response.explanation || response.answer;
+    // Use the detailed explanation if it exists and has content, otherwise use the general answer.
+    // This correctly handles greetings and simple conversations where only 'answer' is returned.
+    const content = (response.explanation && response.explanation.trim() !== '') ? response.explanation : response.answer;
     
     return { success: true, content: content };
   } catch (error) {
