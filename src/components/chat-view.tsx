@@ -3,6 +3,9 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { Bot, LoaderCircle, Send, Lightbulb, User, Paperclip, X, RefreshCw } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -129,19 +132,27 @@ export default function ChatView({
                   )}
                   <div
                     className={cn(
-                      'max-w-xl rounded-lg p-4',
+                      'max-w-xl rounded-lg p-4 prose dark:prose-invert',
                       message.role === 'user'
-                        ? 'bg-primary text-primary-foreground'
+                        ? 'bg-primary text-primary-foreground prose-p:text-primary-foreground'
                         : 'bg-card border'
                     )}
                   >
-                    <p className="whitespace-pre-wrap">{message.content}</p>
+                     <ReactMarkdown remarkPlugins={[remarkGfm]}
+                      components={{
+                        p: ({node, ...props}) => <p className="mb-2 last:mb-0" {...props} />,
+                        ol: ({node, ...props}) => <ol className="list-decimal list-inside" {...props} />,
+                        ul: ({node, ...props}) => <ul className="list-disc list-inside" {...props} />,
+                      }}
+                     >
+                        {message.content}
+                    </ReactMarkdown>
                     {message.role === 'assistant' && (
-                      <div className="mt-4">
+                      <div className="mt-4 not-prose">
                         {message.suggestedQuestions && message.suggestedQuestions.length > 0 && (
                             <div>
                                 <Separator className="my-2" />
-                                <h4 className="font-semibold text-sm mb-2">
+                                <h4 className="font-semibold text-sm mb-2 text-card-foreground">
                                 Câu hỏi gợi ý:
                                 </h4>
                                 <div className="flex flex-wrap gap-2">
