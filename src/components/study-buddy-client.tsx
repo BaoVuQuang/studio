@@ -25,11 +25,9 @@ import { getQuiz, getTutorResponse, getQuestionSuggestions } from '@/app/actions
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import QuizView from '@/components/quiz-view';
 import ChatView from '@/components/chat-view';
-import { Separator } from './ui/separator';
 
 // Data definitions
 const educationLevels: { value: EducationLevel; label: string }[] = [
@@ -266,7 +264,7 @@ export default function StudyBuddyClient() {
   const renderBreadcrumbs = () => {
     if (step === 'level') return null;
     const levelLabel = educationLevels.find(l => l.value === selectedLevel)?.label;
-    const gradeLabel = gradesByLevel[selectedLevel!]?.find(g => g.value === selectedGrade)?.label;
+    const gradeLabel = availableGrades.find(g => g.value === selectedGrade)?.label;
     
     return (
       <div className="flex items-center text-sm text-muted-foreground mb-4">
@@ -367,13 +365,13 @@ export default function StudyBuddyClient() {
 
       case 'chat':
         return (
-          <div className="h-full w-full max-w-4xl flex flex-col">
+          <div className="h-full w-full max-w-4xl flex flex-col p-4 sm:p-6 md:p-8">
             <header className="flex items-center gap-4 mb-4">
-               <Button variant="outline" size="icon" className="h-8 w-8" onClick={handleBack}>
+               <Button variant="outline" size="icon" className="h-8 w-8 flex-shrink-0" onClick={handleBack}>
                 <ArrowLeft className="h-4 w-4" />
               </Button>
-              <div>
-                <h1 className="text-xl font-bold">Trò chuyện với AI</h1>
+              <div className="min-w-0">
+                <h1 className="text-xl font-bold truncate">Trò chuyện: {currentSubjectDetails?.label}</h1>
                 {renderBreadcrumbs()}
               </div>
             </header>
@@ -397,19 +395,19 @@ export default function StudyBuddyClient() {
 
       case 'quiz':
         return (
-            <div className="h-full w-full max-w-6xl flex flex-col">
+            <div className="h-full w-full max-w-6xl flex flex-col p-4 sm:p-6 md:p-8">
                  <header className="flex items-center gap-4 mb-4">
-                    <Button variant="outline" size="icon" className="h-8 w-8" onClick={handleBack}>
+                    <Button variant="outline" size="icon" className="h-8 w-8 flex-shrink-0" onClick={handleBack}>
                         <ArrowLeft className="h-4 w-4" />
                     </Button>
-                    <div>
-                        <h1 className="text-xl font-bold">Ôn tập</h1>
+                    <div className="min-w-0">
+                        <h1 className="text-xl font-bold truncate">Ôn tập: {currentSubjectDetails?.label}</h1>
                         {renderBreadcrumbs()}
                     </div>
                 </header>
-                <div className="flex-1 min-h-0 bg-background rounded-lg shadow-sm">
+                <div className="flex-1 min-h-0 bg-card rounded-lg shadow-sm p-4 sm:p-6">
                     {isQuizLoading ? (
-                        <div className="p-6 space-y-8">
+                        <div className="space-y-8">
                             <Skeleton className="h-8 w-1/3" />
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <Skeleton className="h-48 w-full" />
@@ -430,12 +428,16 @@ export default function StudyBuddyClient() {
     }
   };
 
+  const isSelectionStep = step === 'level' || step === 'grade' || step === 'subject' || step === 'mode';
+
   return (
     <div className="h-full w-full flex flex-col items-center justify-center">
-        <div className="flex items-center gap-2 mb-8">
-            <BrainCircuit className="h-8 w-8 text-primary" />
-            <h1 className="font-bold text-3xl tracking-tight">StudyBuddy AI</h1>
-        </div>
+        {isSelectionStep && (
+            <div className="flex items-center gap-2 mb-8">
+                <BrainCircuit className="h-8 w-8 text-primary" />
+                <h1 className="font-bold text-3xl tracking-tight">StudyBuddy AI</h1>
+            </div>
+        )}
         {renderContent()}
     </div>
   );

@@ -3,6 +3,13 @@ import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import 'katex/dist/katex.min.css';
 import { cn } from '@/lib/utils';
+import { Inter } from 'next/font/google';
+
+const inter = Inter({
+  subsets: ['latin'],
+  variable: '--font-sans',
+})
+
 
 export const metadata: Metadata = {
   title: 'StudyBuddy AI - Trợ lý học tập',
@@ -16,17 +23,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="vi" className="h-full">
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
-          rel="stylesheet"
-        />
-      </head>
       <body className={cn(
         "h-full font-sans antialiased",
-        "bg-background text-foreground"
+        inter.variable
       )}>
         {children}
         <Toaster />
