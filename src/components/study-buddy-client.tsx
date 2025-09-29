@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useCallback, useMemo, useEffect } from 'react';
@@ -15,24 +14,17 @@ import {
   Atom,
   Sigma,
   BookCopy,
-  BrainCircuit,
-  MessageCircle,
-  Lightbulb,
-  ArrowLeft,
-  Book,
 } from 'lucide-react';
 
 import type { Conversation, Message, Subject, EducationLevel, Grade, QuizData } from '@/lib/types';
 import { getQuestionSuggestions, getTutorResponse, getQuiz } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
 import ChatView from '@/components/chat-view';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
-import { Button } from './ui/button';
-import { RadioGroup, RadioGroupItem } from './ui/radio-group';
-import { Label } from './ui/label';
-import QuizDialog from './quiz-dialog';
-
-type View = 'level' | 'grade' | 'subject' | 'mode' | 'chat';
+import { Skeleton } from '@/components/ui/skeleton';
+import QuizView from '@/components/quiz-view';
+import DashboardLayout, { AppSidebar, AppContent, AppChatbar } from '@/components/dashboard-layout';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Label } from '@/components/ui/label';
 
 const allThcsSubjects: Subject[] = [
   { value: 'math', label: 'Toán học', icon: Calculator, grades: ['6', '7', '8', '9'] },
@@ -70,7 +62,6 @@ const daihocSubjects: Subject[] = [
     { value: 'english', label: 'Tiếng Anh học thuật', icon: Languages, grades: [] },
 ];
 
-
 const educationLevels: { value: EducationLevel, label: string }[] = [
     { value: 'thcs', label: 'Trung học cơ sở (6-9)'},
     { value: 'thpt', label: 'Trung học phổ thông (10-12)'},
@@ -98,16 +89,23 @@ const subjectMap: Record<EducationLevel, Subject[]> = {
     daihoc: daihocSubjects,
 };
 
+function getDefaultSelections() {
+  const defaultLevel: EducationLevel = 'thpt';
+  const defaultGrade = '12';
+  const defaultSubject = 'math';
+  return { defaultLevel, defaultGrade, defaultSubject };
+}
+
 
 export default function StudyBuddyClient() {
-  const [currentView, setCurrentView] = useState<View>('level');
+  const { defaultLevel, defaultGrade, defaultSubject } = getDefaultSelections();
+
+  const [selectedLevel, setSelectedLevel] = useState<EducationLevel>(defaultLevel);
+  const [grades, setGrades] = useState<Grade[]>(gradesByLevel[defaultLevel]);
+  const [selectedGrade, setSelectedGrade] = useState<string>(defaultGrade);
   
-  const [selectedLevel, setSelectedLevel] = useState<EducationLevel | null>(null);
-  const [grades, setGrades] = useState<Grade[]>([]);
-  const [selectedGrade, setSelectedGrade] = useState<string | null>(null);
-  
-  const [subjects, setSubjects] = useState<Subject[]>([]);
-  const [selectedSubject, setSelectedSubject] = useState<string | null>(null);
+  const [subjects, setSubjects] = useState<Subject[]>(subjectMap[defaultLevel].filter(s => s.grades.includes(defaultGrade)));
+  const [selectedSubject, setSelectedSubject] = useState<string>(defaultSubject);
   
   const [chatMessages, setChatMessages] = useState<Message[]>([]);
   const [history, setHistory] = useState<Conversation[]>([]);
@@ -115,77 +113,44 @@ export default function StudyBuddyClient() {
   const [documentContent, setDocumentContent] = useState<string | null>(null);
   const [documentName, setDocumentName] = useState<string | null>(null);
 
-  const [isQuizDialogOpen, setQuizDialogOpen] = useState(false);
   const [quizData, setQuizData] = useState<QuizData | null>(null);
-  const [isQuizLoading, setQuizLoading] = useState(false);
-
+  const [isQuizLoading, setQuizLoading] = useState(true);
 
   const { toast } = useToast();
+  
+  const clearChat = useCallback(() => {
+    setChatMessages([]);
+    setDocumentContent(null);
+    setDocumentName(null);
+  }, []);
 
-  const handleLevelSelect = (level: EducationLevel) => {
+  const onLevelChange = (level: EducationLevel) => {
     setSelectedLevel(level);
     const newGrades = gradesByLevel[level];
     setGrades(newGrades);
-    if (newGrades.length > 0) {
-      setCurrentView('grade');
-    } else {
-      // Skip grade selection for university level
-      setSelectedGrade(null);
-      const newSubjects = subjectMap[level];
-      setSubjects(newSubjects);
-      setCurrentView('subject');
-    }
+    
+    // Reset grade and subject
+    const newSelectedGrade = newGrades.length > 0 ? newGrades[0].value : undefined;
+    setSelectedGrade(newSelectedGrade as string);
+    
+    const newSubjects = subjectMap[level].filter(s => newSelectedGrade ? s.grades.includes(newSelectedGrade) : s.grades.length === 0);
+    setSubjects(newSubjects);
+    setSelectedSubject(newSubjects.length > 0 ? newSubjects[0].value : '');
+    
+    clearChat();
   };
 
-  const handleGradeSelect = (grade: string) => {
+  const onGradeChange = (grade: string) => {
     setSelectedGrade(grade);
-    if (selectedLevel) {
-      const newSubjects = subjectMap[selectedLevel].filter(s => s.grades.includes(grade));
-      setSubjects(newSubjects);
-      setCurrentView('subject');
-    }
+    const newSubjects = subjectMap[selectedLevel].filter(s => s.grades.includes(grade));
+    setSubjects(newSubjects);
+    setSelectedSubject(newSubjects[0].value);
+    clearChat();
   };
 
-  const handleSubjectSelect = (subject: string) => {
+  const onSubjectChange = (subject: string) => {
     setSelectedSubject(subject);
-    setCurrentView('mode');
-  };
-
-  const handleModeSelect = (mode: 'chat' | 'quiz') => {
-    if (mode === 'chat') {
-      setCurrentView('chat');
-    } else {
-      handleQuiz();
-    }
-  };
-
-  const handleBack = () => {
-    setChatMessages([]); // Clear chat on back
-    setDocumentContent(null);
-    setDocumentName(null);
-
-    switch (currentView) {
-      case 'chat':
-        setCurrentView('mode');
-        break;
-      case 'mode':
-        setSelectedSubject(null);
-        setCurrentView('subject');
-        break;
-      case 'subject':
-        setSelectedGrade(null);
-        if (grades.length > 0) {
-          setCurrentView('grade');
-        } else {
-          setSelectedLevel(null);
-          setCurrentView('level');
-        }
-        break;
-      case 'grade':
-        setSelectedLevel(null);
-        setCurrentView('level');
-        break;
-    }
+    clearChat();
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -303,13 +268,12 @@ export default function StudyBuddyClient() {
     [selectedSubject, toast]
   );
   
-  const handleQuiz = useCallback(async () => {
+  const handleGetQuiz = useCallback(async () => {
     if (!selectedLevel || !selectedSubject) return;
 
     setQuizLoading(true);
     setQuizData(null);
-    setQuizDialogOpen(true);
-
+    
     const res = await getQuiz(selectedLevel, selectedSubject, selectedGrade || undefined);
 
     if (res.success && res.data) {
@@ -320,163 +284,116 @@ export default function StudyBuddyClient() {
         title: 'Lỗi',
         description: res.error || 'Không thể tạo bài ôn tập.',
       });
-      setQuizDialogOpen(false); // Close dialog on error
+      setQuizData(null);
     }
     setQuizLoading(false);
   }, [selectedLevel, selectedGrade, selectedSubject, toast]);
 
-  const currentSubject = useMemo(() => {
-    return subjects.find((s) => s.value === selectedSubject);
-  }, [subjects, selectedSubject]);
+  useEffect(() => {
+    handleGetQuiz();
+  }, [selectedSubject, handleGetQuiz]);
 
-  const renderContent = () => {
-    switch (currentView) {
-      case 'level':
-        return (
-          <Card className="w-full max-w-md">
-            <CardHeader>
-              <CardTitle>Chọn cấp học của bạn</CardTitle>
-              <CardDescription>Hãy bắt đầu bằng việc chọn cấp học bạn muốn học.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {educationLevels.map(level => (
-                <Button key={level.value} variant="outline" className="w-full h-14 justify-start text-base" onClick={() => handleLevelSelect(level.value)}>
-                  {level.label}
-                </Button>
+  const currentSubjectDetails = useMemo(() => {
+    const allSubjects = subjectMap[selectedLevel];
+    return allSubjects.find((s) => s.value === selectedSubject);
+  }, [selectedLevel, selectedSubject]);
+
+  const renderSidebar = () => (
+    <div className="space-y-6">
+      <div className="space-y-2">
+        <Label htmlFor="level-select">Cấp học</Label>
+        <Select value={selectedLevel} onValueChange={(value) => onLevelChange(value as EducationLevel)}>
+          <SelectTrigger id="level-select">
+            <SelectValue placeholder="Chọn cấp học..." />
+          </SelectTrigger>
+          <SelectContent>
+            {educationLevels.map(level => (
+              <SelectItem key={level.value} value={level.value}>{level.label}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+      
+      {grades.length > 0 && (
+        <div className="space-y-2">
+          <Label htmlFor="grade-select">Lớp học</Label>
+          <Select value={selectedGrade} onValueChange={onGradeChange}>
+            <SelectTrigger id="grade-select">
+              <SelectValue placeholder="Chọn lớp học..." />
+            </SelectTrigger>
+            <SelectContent>
+              {grades.map(grade => (
+                <SelectItem key={grade.value} value={grade.value}>{grade.label}</SelectItem>
               ))}
-            </CardContent>
-          </Card>
-        );
-      case 'grade':
-        return (
-          <Card className="w-full max-w-md">
-            <CardHeader>
-              <CardTitle>Chọn lớp học</CardTitle>
-              <CardDescription>Bạn đang học lớp mấy?</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <RadioGroup onValueChange={handleGradeSelect} className="grid grid-cols-2 gap-4">
-                {grades.map(grade => (
-                  <Label key={grade.value} htmlFor={`grade-${grade.value}`} className="flex items-center gap-4 border rounded-md p-4 cursor-pointer hover:bg-accent">
-                    <RadioGroupItem value={grade.value} id={`grade-${grade.value}`} />
-                    {grade.label}
-                  </Label>
-                ))}
-              </RadioGroup>
-            </CardContent>
-          </Card>
-        );
-      case 'subject':
-        return (
-          <Card className="w-full max-w-lg">
-            <CardHeader>
-              <CardTitle>Chọn môn học</CardTitle>
-              <CardDescription>Bạn muốn học môn gì hôm nay?</CardDescription>
-            </CardHeader>
-            <CardContent className="grid grid-cols-2 md:grid-cols-3 gap-4">
-              {subjects.map(subject => {
-                const Icon = subject.icon;
-                return (
-                  <Card key={subject.value} className="flex flex-col items-center justify-center p-6 cursor-pointer hover:shadow-lg transition-shadow" onClick={() => handleSubjectSelect(subject.value)}>
-                    <Icon className="w-10 h-10 mb-2 text-primary" />
-                    <p className="font-semibold text-center">{subject.label}</p>
-                  </Card>
-                )
-              })}
-            </CardContent>
-          </Card>
-        );
-      case 'mode':
-        return (
-          <Card className="w-full max-w-md">
-             <CardHeader>
-              <CardTitle>Chọn chế độ</CardTitle>
-              <CardDescription>Bạn muốn trò chuyện với AI hay làm bài ôn tập?</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <Button variant="outline" className="w-full h-20 justify-start text-lg" onClick={() => handleModeSelect('chat')}>
-                <MessageCircle className="w-8 h-8 mr-4"/>
-                Trò chuyện với AI
-              </Button>
-              <Button variant="outline" className="w-full h-20 justify-start text-lg" onClick={() => handleModeSelect('quiz')}>
-                <Book className="w-8 h-8 mr-4"/>
-                Ôn tập kiến thức
-              </Button>
-            </CardContent>
-          </Card>
-        );
-      case 'chat':
-        if (!currentSubject) return null;
-        return (
-          <div className="h-full w-full flex">
-            <ChatView
-              key={`${selectedLevel}-${selectedGrade}-${selectedSubject}`}
-              messages={chatMessages}
-              isLoading={isLoading}
-              selectedSubject={currentSubject}
-              documentName={documentName}
-              onSubmit={handleQuestionSubmit}
-              onSuggestQuestions={handleSuggestQuestions}
-              onFileChange={handleFileChange}
-              onClearDocument={handleClearDocument}
-            />
+            </SelectContent>
+          </Select>
+        </div>
+      )}
+
+      <div className="space-y-2">
+        <Label htmlFor="subject-select">Môn học</Label>
+         <Select value={selectedSubject} onValueChange={onSubjectChange} disabled={!selectedGrade && grades.length > 0}>
+            <SelectTrigger id="subject-select">
+              <SelectValue placeholder="Chọn môn học..." />
+            </SelectTrigger>
+            <SelectContent>
+              {subjects.map(subject => (
+                <SelectItem key={subject.value} value={subject.value}>{subject.label}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+      </div>
+    </div>
+  );
+
+  if (!currentSubjectDetails) {
+    return (
+      <DashboardLayout>
+        <AppSidebar>
+          {renderSidebar()}
+        </AppSidebar>
+        <AppContent>
+          <div className="flex items-center justify-center h-full">
+            <p>Vui lòng chọn môn học.</p>
           </div>
-        );
-      default:
-        return null;
-    }
+        </AppContent>
+      </DashboardLayout>
+    );
   }
   
-  const getBreadcrumb = () => {
-    if (currentView === 'level') return null;
-    const levelLabel = educationLevels.find(l => l.value === selectedLevel)?.label;
-    const gradeLabel = gradesByLevel[selectedLevel!]?.find(g => g.value === selectedGrade)?.label;
-    const subjectLabel = subjects.find(s => s.value === selectedSubject)?.label;
-    
-    let path = [levelLabel];
-    if (gradeLabel) path.push(gradeLabel);
-    if (subjectLabel) path.push(subjectLabel);
-    
-    return path.filter(Boolean).join(' / ');
-  }
-
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-secondary/50 p-4">
-       <header className="absolute top-0 left-0 w-full p-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            {currentView !== 'level' && (
-              <Button variant="ghost" size="icon" onClick={handleBack}>
-                <ArrowLeft className="h-5 w-5"/>
-              </Button>
-            )}
-             <div className="flex items-center gap-2">
-                <BrainCircuit className="h-6 w-6 text-primary" />
-                <h1 className="font-bold text-xl">StudyBuddy AI</h1>
-              </div>
-          </div>
-           <div className="text-sm text-muted-foreground font-medium">
-             {getBreadcrumb()}
-           </div>
-       </header>
-
-       <main className="w-full h-full flex-1 flex items-center justify-center">
-         {currentView === 'chat' ? (
-           <div className="w-full h-[calc(100vh-80px)] mt-16 border rounded-lg overflow-hidden bg-background shadow-lg">
-             {renderContent()}
-           </div>
-         ) : (
-           renderContent()
-         )}
-       </main>
-      
-       <QuizDialog
-         isOpen={isQuizDialogOpen}
-         onOpenChange={setQuizDialogOpen}
-         quizData={quizData}
-         isLoading={isQuizLoading}
-         subject={currentSubject}
-         topic={currentSubject?.label || ''}
-       />
-    </div>
+    <DashboardLayout>
+      <AppSidebar>
+        {renderSidebar()}
+      </AppSidebar>
+      <AppContent>
+        {isQuizLoading ? (
+            <div className="p-6 space-y-8">
+              <Skeleton className="h-32 w-full" />
+              <Skeleton className="h-64 w-full" />
+              <Skeleton className="h-64 w-full" />
+            </div>
+        ) : (
+          <QuizView 
+            key={selectedSubject} 
+            quizData={quizData} 
+            subject={currentSubjectDetails} 
+          />
+        )}
+      </AppContent>
+      <AppChatbar>
+         <ChatView
+            key={`${selectedLevel}-${selectedGrade}-${selectedSubject}`}
+            messages={chatMessages}
+            isLoading={isLoading}
+            selectedSubject={currentSubjectDetails}
+            documentName={documentName}
+            onSubmit={handleQuestionSubmit}
+            onSuggestQuestions={handleSuggestQuestions}
+            onFileChange={handleFileChange}
+            onClearDocument={handleClearDocument}
+          />
+      </AppChatbar>
+    </DashboardLayout>
   );
 }
