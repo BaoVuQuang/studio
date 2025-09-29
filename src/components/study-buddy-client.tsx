@@ -305,6 +305,7 @@ export default function StudyBuddyClient() {
   const handleGenerateQuiz = useCallback(
     async (topic: string) => {
       const currentSubjectInfo = subjects.find(s => s.value === selectedSubject);
+      // Use the subject label as the topic for quiz generation for better consistency
       const quizGenerationTopic = currentSubjectInfo?.label || 'chủ đề hiện tại';
 
       setIsGeneratingQuiz(true);
@@ -372,7 +373,7 @@ export default function StudyBuddyClient() {
       <SidebarInset>
        {currentSubject ? (
           <ChatView
-            key={`${currentSubject.value}-${selectedGrade}`} // Add a key to force re-mount when subject or grade changes
+            key={`${selectedLevel}-${selectedGrade}-${selectedSubject}`}
             messages={chatMessages}
             isLoading={isLoading}
             selectedSubject={currentSubject}
@@ -402,3 +403,5 @@ export default function StudyBuddyClient() {
     </SidebarProvider>
   );
 }
+
+    

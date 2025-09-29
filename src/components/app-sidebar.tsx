@@ -108,7 +108,7 @@ export default function AppSidebar({
         )}
         <SidebarGroup>
           <SidebarGroupLabel>Môn học</SidebarGroupLabel>
-          <Select value={selectedSubject} onValueChange={onSubjectChange} disabled={!selectedGrade && selectedLevel !== 'daihoc'}>
+          <Select value={selectedSubject} onValueChange={onSubjectChange} disabled={selectedLevel !== 'daihoc' && !selectedGrade}>
             <SelectTrigger className="w-full mt-2">
               <SelectValue placeholder="Chọn một môn học" />
             </SelectTrigger>
@@ -181,3 +181,5 @@ export default function AppSidebar({
     </>
   );
 }
+
+    
