@@ -25,7 +25,7 @@ import type { EducationLevel, Grade, Subject, QuizData, Message } from '@/lib/ty
 import { getQuiz, getTutorResponse, getQuestionSuggestions } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import QuizView from '@/components/quiz-view';
 import ChatView from '@/components/chat-view';
@@ -474,5 +474,3 @@ export default function StudyBuddyClient() {
     </div>
   );
 }
-
-    
