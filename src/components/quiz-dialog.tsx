@@ -27,7 +27,7 @@ interface QuizDialogProps {
   onOpenChange: (isOpen: boolean) => void;
   quizData: QuizData | null;
   isLoading: boolean;
-  subject: Subject;
+  subject: Subject | undefined; // Allow subject to be undefined
   topic: string;
 }
 
@@ -60,6 +60,11 @@ export default function QuizDialog({
           resetQuiz();
         }
     }, [isOpen, quizData]);
+
+    // If subject is not available yet, don't render the dialog content
+    if (!subject) {
+      return null;
+    }
 
 
   return (

@@ -99,9 +99,9 @@ export default function StudyBuddyClient() {
   const [selectedLevel, setSelectedLevel] = useState<EducationLevel>('thpt');
   const [grades, setGrades] = useState<Grade[]>(gradesByLevel[selectedLevel]);
   const [selectedGrade, setSelectedGrade] = useState<string | undefined>(gradesByLevel[selectedLevel][0]?.value);
-  const [subjects, setSubjects] = useState<Subject[]>([]);
-
+  const [subjects, setSubjects] = useState<Subject[]>(subjectMap[selectedLevel]);
   const [selectedSubject, setSelectedSubject] = useState<string>('');
+  
   const [chatMessages, setChatMessages] = useState<Message[]>([]);
   const [history, setHistory] = useState<Conversation[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -115,49 +115,38 @@ export default function StudyBuddyClient() {
 
   const { toast } = useToast();
 
+  const clearChat = () => {
+    setChatMessages([]);
+  }
+
   const clearDocumentWithoutToast = () => {
     setDocumentContent(null);
     setDocumentName(null);
   }
 
-  // Effect to handle changes in level and grade selection
+  // Effect to update available GRADES and reset grade selection when LEVEL changes
   useEffect(() => {
-    // 1. Determine available grades based on the selected level
     const newGrades = gradesByLevel[selectedLevel];
     setGrades(newGrades);
-    
-    // 2. Determine the new selected grade
-    // If it's a new level, default to the first grade.
-    // If the old grade is invalid for the new level, default to the first grade.
-    const currentGradeIsValid = newGrades.some(g => g.value === selectedGrade);
-    const newSelectedGrade = (selectedLevel === 'daihoc' || !currentGradeIsValid) ? newGrades[0]?.value : selectedGrade;
-    setSelectedGrade(newSelectedGrade);
-    
-    // 3. Determine available subjects based on the new level and grade
+    setSelectedGrade(newGrades[0]?.value); // Reset to the first grade or undefined for daihoc
+  }, [selectedLevel]);
+  
+  // Effect to update available SUBJECTS and reset subject selection when LEVEL or GRADE changes
+  useEffect(() => {
     let newSubjects: Subject[] = [];
     if (selectedLevel === 'daihoc') {
-        newSubjects = subjectMap.daihoc;
-    } else if (newSelectedGrade) {
-        newSubjects = subjectMap[selectedLevel].filter(s => s.grades.includes(newSelectedGrade));
+      newSubjects = subjectMap.daihoc;
+    } else if (selectedGrade) {
+      newSubjects = subjectMap[selectedLevel].filter(s => s.grades.includes(selectedGrade));
     }
     setSubjects(newSubjects);
-
-    // 4. Determine the new selected subject
-    // If the old subject is not in the new list, default to the first subject.
-    const currentSubjectIsValid = newSubjects.some(s => s.value === selectedSubject);
-    const newSelectedSubject = (newSubjects.length > 0 && !currentSubjectIsValid) ? newSubjects[0].value : selectedSubject;
-    if (newSelectedSubject !== selectedSubject) {
-        setSelectedSubject(newSelectedSubject);
-    }
-    
-    // 5. Reset chat and document when context changes
-    handleNewChat();
-    clearDocumentWithoutToast();
-
-  // We only want this effect to re-run when the user explicitly changes level or grade
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedLevel, selectedGrade]);
   
+    // Set default subject if the current one is not available or not set
+    const currentSubjectIsValid = newSubjects.some(s => s.value === selectedSubject);
+    if (!currentSubjectIsValid) {
+      setSelectedSubject(newSubjects[0]?.value || '');
+    }
+  }, [selectedLevel, selectedGrade, selectedSubject]);
 
 
   const groupedHistory = useMemo(() => {
@@ -180,7 +169,7 @@ export default function StudyBuddyClient() {
         const content = event.target?.result as string;
         setDocumentContent(content);
         setDocumentName(file.name);
-        setChatMessages([]); // Clear chat when new document is loaded
+        clearChat(); // Clear chat when new document is loaded
         toast({
           title: "Tài liệu đã được tải lên",
           description: `Bây giờ bạn có thể hỏi về nội dung của "${file.name}".`,
@@ -201,7 +190,8 @@ export default function StudyBuddyClient() {
   };
 
   const handleNewChat = () => {
-    setChatMessages([]);
+    clearChat();
+    clearDocumentWithoutToast();
   };
 
   const handleHistoryClick = (conversation: Conversation) => {
@@ -219,10 +209,10 @@ export default function StudyBuddyClient() {
     ];
     setChatMessages(newMessages);
     setSelectedLevel(conversation.level);
-    setSelectedGrade(conversation.grade);
+    // This will trigger the useEffects to update grade and subject accordingly
+    setSelectedGrade(conversation.grade); 
     setSelectedSubject(conversation.subject);
-    setDocumentContent(null);
-    setDocumentName(null);
+    clearDocumentWithoutToast();
   };
 
   const handleQuestionSubmit = useCallback(
@@ -264,7 +254,7 @@ export default function StudyBuddyClient() {
         toast({
           variant: 'destructive',
           title: 'Lỗi',
-          description: res.error,
+          description: res.error || 'Đã có lỗi xảy ra.',
         });
         setChatMessages((prev) => prev.slice(0, -1));
       }
@@ -314,9 +304,8 @@ export default function StudyBuddyClient() {
 
   const handleGenerateQuiz = useCallback(
     async (topic: string) => {
-      const currentSubject = subjects.find(s => s.value === selectedSubject);
-      // Use the subject label as the topic for quiz generation. If the topic from the last question is too broad, this is a safe fallback.
-      const quizGenerationTopic = currentSubject?.label || 'chủ đề hiện tại';
+      const currentSubjectInfo = subjects.find(s => s.value === selectedSubject);
+      const quizGenerationTopic = currentSubjectInfo?.label || 'chủ đề hiện tại';
 
       setIsGeneratingQuiz(true);
       setIsQuizDialogOpen(true);
@@ -342,8 +331,8 @@ export default function StudyBuddyClient() {
 
 
   const currentSubject = useMemo(() => {
-    return subjects.find((s) => s.value === selectedSubject) || subjects[0] || subjectMap[selectedLevel][0];
-  }, [subjects, selectedSubject, selectedLevel]);
+    return subjects.find((s) => s.value === selectedSubject);
+  }, [subjects, selectedSubject]);
 
 
   return (
@@ -353,33 +342,37 @@ export default function StudyBuddyClient() {
           levels={educationLevels}
           selectedLevel={selectedLevel}
           onLevelChange={level => {
+            if(level === selectedLevel) return;
             setSelectedLevel(level);
+            clearChat();
+            clearDocumentWithoutToast();
           }}
           grades={grades}
           selectedGrade={selectedGrade}
           onGradeChange={grade => {
+            if(grade === selectedGrade) return;
             setSelectedGrade(grade);
+            clearChat();
+            clearDocumentWithoutToast();
           }}
           subjects={subjects}
           selectedSubject={selectedSubject}
           onSubjectChange={subject => {
+            if(subject === selectedSubject) return;
             setSelectedSubject(subject);
+            clearChat();
             clearDocumentWithoutToast();
-            handleNewChat();
           }}
           history={history}
           groupedHistory={groupedHistory}
           onHistoryClick={handleHistoryClick}
-          onNewChat={() => {
-            handleNewChat();
-            clearDocumentWithoutToast();
-          }}
+          onNewChat={handleNewChat}
         />
       </Sidebar>
       <SidebarInset>
        {currentSubject ? (
           <ChatView
-            key={currentSubject.value} // Add a key to force re-mount when subject changes
+            key={`${currentSubject.value}-${selectedGrade}`} // Add a key to force re-mount when subject or grade changes
             messages={chatMessages}
             isLoading={isLoading}
             selectedSubject={currentSubject}
@@ -409,5 +402,3 @@ export default function StudyBuddyClient() {
     </SidebarProvider>
   );
 }
-
-    
