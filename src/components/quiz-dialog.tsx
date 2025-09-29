@@ -72,7 +72,7 @@ export default function QuizDialog({
       <DialogContent className="max-w-3xl h-[80vh] flex flex-col">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <subject.icon className="h-5 w-5" />
+            {subject.icon && <subject.icon className="h-5 w-5" />}
             Ôn tập: {subject.label}
           </DialogTitle>
           <DialogDescription>

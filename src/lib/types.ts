@@ -30,3 +30,20 @@ export type Conversation = {
   question: string;
   answer: string;
 };
+
+// Types for Quiz feature
+export type Flashcard = {
+  question: string;
+  answer: string;
+};
+
+export type MultipleChoiceQuestion = {
+  question: string;
+  options: string[];
+  correctAnswer: string;
+};
+
+export type QuizData = {
+  flashcards: Flashcard[];
+  multipleChoice: MultipleChoiceQuestion[];
+};
