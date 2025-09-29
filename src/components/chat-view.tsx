@@ -133,59 +133,62 @@ export default function ChatView({
                   >
                     <p className="whitespace-pre-wrap">{message.content}</p>
                     {message.role === 'assistant' && (
-                      <div className="mt-4 flex items-center gap-2">
-                        {message.resources ? (
-                          <div>
-                            <Separator className="my-2" />
-                            <h4 className="font-semibold text-sm mb-2">
-                              Tài nguyên được đề xuất:
-                            </h4>
-                            <ul className="space-y-1 text-sm list-disc pl-4">
-                              {message.resources.map((res, i) => (
-                                <li key={i}>
-                                  <a
-                                    href={res}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-accent underline hover:no-underline"
-                                  >
-                                    {res}
-                                  </a>
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                        ) : (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="text-accent hover:text-accent px-2"
-                            onClick={() =>
-                              onSuggestResources(
-                                message.id,
-                                getLastUserQuestion(message.id)
-                              )
-                            }
-                            disabled={message.isSuggestingResources}
-                          >
-                            {message.isSuggestingResources ? (
-                              <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />
-                            ) : (
-                              <Sparkles className="mr-2 h-4 w-4" />
-                            )}
-                            Gợi ý tài nguyên
-                          </Button>
+                      <div className="mt-4">
+                        {message.resources && (
+                            <div>
+                                <Separator className="my-2" />
+                                <h4 className="font-semibold text-sm mb-2">
+                                Tài nguyên được đề xuất:
+                                </h4>
+                                <ul className="space-y-1 text-sm list-disc pl-4">
+                                {message.resources.map((res, i) => (
+                                    <li key={i}>
+                                    <a
+                                        href={res}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-accent underline hover:no-underline"
+                                    >
+                                        {res}
+                                    </a>
+                                    </li>
+                                ))}
+                                </ul>
+                            </div>
                         )}
-                        <Separator orientation="vertical" className="h-6" />
-                         <Button
-                            variant="ghost"
-                            size="sm"
-                            className="text-accent hover:text-accent px-2"
-                            onClick={() => onGenerateQuiz(getLastUserQuestion(message.id))}
+                        <div className="flex items-center gap-2 mt-2">
+                          {!message.resources && (
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                className="text-accent hover:text-accent px-2"
+                                onClick={() =>
+                                onSuggestResources(
+                                    message.id,
+                                    getLastUserQuestion(message.id)
+                                )
+                                }
+                                disabled={message.isSuggestingResources}
+                            >
+                                {message.isSuggestingResources ? (
+                                <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />
+                                ) : (
+                                <Sparkles className="mr-2 h-4 w-4" />
+                                )}
+                                Gợi ý tài nguyên
+                            </Button>
+                          )}
+                          {!message.resources && <Separator orientation="vertical" className="h-6" />}
+                          <Button
+                              variant="ghost"
+                              size="sm"
+                              className="text-accent hover:text-accent px-2"
+                              onClick={() => onGenerateQuiz(getLastUserQuestion(message.id))}
                           >
-                            <RefreshCw className="mr-2 h-4 w-4" />
-                            Ôn tập
+                              <RefreshCw className="mr-2 h-4 w-4" />
+                              Ôn tập
                           </Button>
+                        </div>
                       </div>
                     )}
                   </div>
