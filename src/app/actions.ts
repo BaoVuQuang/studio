@@ -9,9 +9,12 @@ import type { EducationLevel, QuizData } from '@/lib/types';
 
 export async function getTutorResponse(level: EducationLevel, grade: string | undefined, subject: string, question: string, documentContent: string | null) {
   try {
+    // If user uploaded a document, use its content as knowledge base.
+    // Otherwise, find the knowledge base for the selected subject.
     const knowledgeBase = documentContent ?? getKnowledgeBase(level, subject, grade);
     
     const input: ProvidePersonalizedTutoringInput = { subject, question };
+    // Only add knowledgeBase to input if it exists, to avoid errors with undefined values
     if (knowledgeBase) {
       input.knowledgeBase = knowledgeBase;
     }
@@ -65,3 +68,4 @@ export async function getQuiz(level: EducationLevel, subject: string, grade: str
   }
 }
 
+    

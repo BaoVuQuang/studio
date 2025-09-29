@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useRef } from 'react';
 import {
   BookOpen,
   Calculator,
@@ -19,6 +19,7 @@ import {
   MessageCircle,
   ClipboardList,
   ArrowLeft,
+  Upload,
 } from 'lucide-react';
 import type { EducationLevel, Grade, Subject, QuizData, Message } from '@/lib/types';
 import { getQuiz, getTutorResponse, getQuestionSuggestions } from '@/app/actions';
@@ -28,6 +29,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Skeleton } from '@/components/ui/skeleton';
 import QuizView from '@/components/quiz-view';
 import ChatView from '@/components/chat-view';
+import { Separator } from './ui/separator';
 
 // Data definitions
 const educationLevels: { value: EducationLevel; label: string }[] = [
@@ -102,6 +104,7 @@ export default function StudyBuddyClient() {
   const [isQuizLoading, setQuizLoading] = useState(false);
 
   const { toast } = useToast();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const availableGrades = useMemo(() => {
     if (!selectedLevel) return [];
@@ -179,7 +182,14 @@ export default function StudyBuddyClient() {
     switch (step) {
       case 'quiz':
       case 'chat':
-        setStep('mode');
+        if (documentName) { // If we are in a custom document chat, go all the way back to subject selection
+          setDocumentContent(null);
+          setDocumentName(null);
+          setChatMessages([]);
+          setStep('subject');
+        } else {
+          setStep('mode');
+        }
         break;
       case 'mode':
         setStep('subject');
@@ -199,13 +209,16 @@ export default function StudyBuddyClient() {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
+    if (file && selectedLevel) {
       const reader = new FileReader();
       reader.onload = (event) => {
         const content = event.target?.result as string;
         setDocumentContent(content);
         setDocumentName(file.name);
+        // Create a temporary subject for the custom document
+        setSelectedSubject(file.name); 
         setChatMessages([]);
+        setStep('chat');
         toast({
           title: "Tài liệu đã được tải lên",
           description: `Bây giờ bạn có thể hỏi về nội dung của "${file.name}".`,
@@ -213,6 +226,7 @@ export default function StudyBuddyClient() {
       };
       reader.readAsText(file);
     }
+    // Reset file input to allow uploading the same file again
     e.target.value = '';
   };
 
@@ -339,6 +353,24 @@ export default function StudyBuddyClient() {
                 </Button>
               ))}
             </CardContent>
+             <CardFooter className="flex-col items-center gap-4 pt-6">
+                <div className="flex items-center w-full">
+                    <Separator className="flex-1" />
+                    <span className="px-4 text-xs text-muted-foreground">HOẶC</span>
+                    <Separator className="flex-1" />
+                </div>
+                <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleFileChange}
+                    className="hidden"
+                    accept=".txt,.md"
+                />
+                <Button variant="secondary" className="w-full" onClick={() => fileInputRef.current?.click()}>
+                    <Upload className="mr-2 h-4 w-4" />
+                    Tải lên tài liệu riêng...
+                </Button>
+             </CardFooter>
           </Card>
         );
 
@@ -371,17 +403,17 @@ export default function StudyBuddyClient() {
                 <ArrowLeft className="h-4 w-4" />
               </Button>
               <div className="min-w-0">
-                <h1 className="text-xl font-bold truncate">Trò chuyện: {currentSubjectDetails?.label}</h1>
+                <h1 className="text-xl font-bold truncate">Trò chuyện: {documentName || currentSubjectDetails?.label}</h1>
                 {renderBreadcrumbs()}
               </div>
             </header>
             <div className="flex-1 min-h-0">
-               {currentSubjectDetails && (
+               {(currentSubjectDetails || documentName) && (
                 <ChatView
                     key={`${selectedLevel}-${selectedGrade}-${selectedSubject}`}
                     messages={chatMessages}
                     isLoading={isChatLoading}
-                    selectedSubject={currentSubjectDetails}
+                    selectedSubject={currentSubjectDetails || { label: documentName || 'Tài liệu của bạn', value: 'custom', icon: BookOpen, grades: [] }}
                     documentName={documentName}
                     onSubmit={handleQuestionSubmit}
                     onSuggestQuestions={handleSuggestQuestions}
@@ -431,7 +463,7 @@ export default function StudyBuddyClient() {
   const isSelectionStep = step === 'level' || step === 'grade' || step === 'subject' || step === 'mode';
 
   return (
-    <div className="h-full w-full flex flex-col items-center justify-center">
+    <div className="h-full w-full flex flex-col items-center justify-center p-4">
         {isSelectionStep && (
             <div className="flex items-center gap-2 mb-8">
                 <BrainCircuit className="h-8 w-8 text-primary" />
@@ -442,3 +474,5 @@ export default function StudyBuddyClient() {
     </div>
   );
 }
+
+    
