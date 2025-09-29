@@ -86,7 +86,7 @@ export default function ChatView({
 
 
   return (
-    <Card className="flex flex-col h-full border-l rounded-none">
+    <Card className="flex flex-col h-full border rounded-lg">
        <CardHeader className="p-4 border-b">
         <CardTitle className="flex items-center justify-between">
           <div className="flex items-center gap-2 text-lg font-semibold">
@@ -147,7 +147,7 @@ export default function ChatView({
                       components={{
                         p: ({node, ...props}) => <p className="mb-2 last:mb-0" {...props} />,
                         ol: ({node, ...props}) => <ol className="list-decimal list-inside" {...props} />,
-                        ul: ({node, ...props}) => <ul className="list-disc list-inside" {...props} />,
+ul: ({node, ...props}) => <ul className="list-disc list-inside" {...props} />,
                         math: ({value}) => <BlockMath math={value} />,
                         inlineMath: ({value}) => <InlineMath math={value} />,
                       }}

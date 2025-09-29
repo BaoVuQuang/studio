@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useMemo, useEffect } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import {
   BookOpen,
   Calculator,
@@ -14,58 +14,28 @@ import {
   Atom,
   Sigma,
   BookCopy,
+  ChevronRight,
+  BrainCircuit,
+  MessageCircle,
+  ClipboardList,
+  ArrowLeft,
 } from 'lucide-react';
-
-import type { Conversation, Message, Subject, EducationLevel, Grade, QuizData } from '@/lib/types';
-import { getQuestionSuggestions, getTutorResponse, getQuiz } from '@/app/actions';
+import type { EducationLevel, Grade, Subject, QuizData, Message } from '@/lib/types';
+import { getQuiz, getTutorResponse, getQuestionSuggestions } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
-import ChatView from '@/components/chat-view';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import QuizView from '@/components/quiz-view';
-import DashboardLayout, { AppSidebar, AppContent, AppChatbar } from '@/components/dashboard-layout';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Label } from '@/components/ui/label';
+import ChatView from '@/components/chat-view';
+import { Separator } from './ui/separator';
 
-const allThcsSubjects: Subject[] = [
-  { value: 'math', label: 'Toán học', icon: Calculator, grades: ['6', '7', '8', '9'] },
-  { value: 'physics', label: 'Vật lí', icon: FlaskConical, grades: ['6', '7', '8', '9'] },
-  { value: 'chemistry', label: 'Hóa học', icon: Beaker, grades: ['8', '9'] },
-  { value: 'biology', label: 'Sinh học', icon: Dna, grades: ['6', '7', '8', '9'] },
-  { value: 'literature', label: 'Ngữ văn', icon: BookOpen, grades: ['6', '7', '8', '9'] },
-  { value: 'history', label: 'Lịch sử', icon: Landmark, grades: ['6', '7', '8', '9'] },
-  { value: 'geography', label: 'Địa lí', icon: Globe, grades: ['6', '7', '8', '9'] },
-  { value: 'civics', label: 'GDCD', icon: Scale, grades: ['6', '7', '8', '9'] },
-  { value: 'english', label: 'Ngoại ngữ', icon: Languages, grades: ['6', '7', '8', '9'] },
-];
-
-const allThptSubjects: Subject[] = [
-    { value: 'math', label: 'Toán học', icon: Calculator, grades: ['10', '11', '12'] },
-    { value: 'physics', label: 'Vật lí', icon: FlaskConical, grades: ['10', '11', '12'] },
-    { value: 'chemistry', label: 'Hóa học', icon: Beaker, grades: ['10', '11', '12'] },
-    { value: 'biology', label: 'Sinh học', icon: Dna, grades: ['10', '11', '12'] },
-    { value: 'literature', label: 'Ngữ văn', icon: BookOpen, grades: ['10', '11', '12'] },
-    { value: 'history', label: 'Lịch sử', icon: Landmark, grades: ['10', '11', '12'] },
-    { value: 'geography', label: 'Địa lí', icon: Globe, grades: ['10', '11', '12'] },
-    { value: 'civics', label: 'GDCD/Kinh tế & PL', icon: Scale, grades: ['10', '11', '12'] },
-    { value: 'english', label: 'Ngoại ngữ', icon: Languages, grades: ['10', '11', '12'] },
-];
-  
-const daihocSubjects: Subject[] = [
-    { value: 'math', label: 'Toán cao cấp', icon: Sigma, grades: [] },
-    { value: 'physics', label: 'Vật lí đại cương', icon: Atom, grades: [] },
-    { value: 'chemistry', label: 'Hóa học đại cương', icon: Beaker, grades: [] },
-    { value: 'biology', label: 'Sinh học đại cương', icon: Dna, grades: [] },
-    { value: 'philosophy', label: 'Triết học Mác-Lênin', icon: BookCopy, grades: [] },
-    { value: 'political-economy', label: 'Kinh tế chính trị Mác-Lênin', icon: BookCopy, grades: [] },
-    { value: 'scientific-socialism', label: 'Chủ nghĩa xã hội khoa học', icon: BookCopy, grades: [] },
-    { value: 'party-history', label: 'Lịch sử Đảng Cộng sản Việt Nam', icon: BookCopy, grades: [] },
-    { value: 'english', label: 'Tiếng Anh học thuật', icon: Languages, grades: [] },
-];
-
-const educationLevels: { value: EducationLevel, label: string }[] = [
-    { value: 'thcs', label: 'Trung học cơ sở (6-9)'},
-    { value: 'thpt', label: 'Trung học phổ thông (10-12)'},
-    { value: 'daihoc', label: 'Đại học'},
+// Data definitions
+const educationLevels: { value: EducationLevel; label: string }[] = [
+  { value: 'thcs', label: 'Trung học cơ sở (6-9)' },
+  { value: 'thpt', label: 'Trung học phổ thông (10-12)' },
+  { value: 'daihoc', label: 'Đại học' },
 ];
 
 const gradesByLevel: Record<EducationLevel, Grade[]> = {
@@ -84,73 +54,149 @@ const gradesByLevel: Record<EducationLevel, Grade[]> = {
 };
 
 const subjectMap: Record<EducationLevel, Subject[]> = {
-    thcs: allThcsSubjects,
-    thpt: allThptSubjects,
-    daihoc: daihocSubjects,
+  thcs: [
+    { value: 'math', label: 'Toán học', icon: Calculator, grades: ['6', '7', '8', '9'] },
+    { value: 'physics', label: 'Vật lí', icon: FlaskConical, grades: ['6', '7', '8', '9'] },
+    { value: 'chemistry', label: 'Hóa học', icon: Beaker, grades: ['8', '9'] },
+    { value: 'biology', label: 'Sinh học', icon: Dna, grades: ['6', '7', '8', '9'] },
+    { value: 'literature', label: 'Ngữ văn', icon: BookOpen, grades: ['6', '7', '8', '9'] },
+    { value: 'history', label: 'Lịch sử', icon: Landmark, grades: ['6', '7', '8', '9'] },
+    { value: 'geography', label: 'Địa lí', icon: Globe, grades: ['6', '7', '8', '9'] },
+    { value: 'civics', label: 'GDCD', icon: Scale, grades: ['6', '7', '8', '9'] },
+    { value: 'english', label: 'Ngoại ngữ', icon: Languages, grades: ['6', '7', '8', '9'] },
+  ],
+  thpt: [
+    { value: 'math', label: 'Toán học', icon: Calculator, grades: ['10', '11', '12'] },
+    { value: 'physics', label: 'Vật lí', icon: FlaskConical, grades: ['10', '11', '12'] },
+    { value: 'chemistry', label: 'Hóa học', icon: Beaker, grades: ['10', '11', '12'] },
+    { value: 'biology', label: 'Sinh học', icon: Dna, grades: ['10', '11', '12'] },
+    { value: 'literature', label: 'Ngữ văn', icon: BookOpen, grades: ['10', '11', '12'] },
+    { value: 'history', label: 'Lịch sử', icon: Landmark, grades: ['10', '11', '12'] },
+    { value: 'geography', label: 'Địa lí', icon: Globe, grades: ['10', '11', '12'] },
+    { value: 'civics', label: 'GDCD/Kinh tế & PL', icon: Scale, grades: ['10', '11', '12'] },
+    { value: 'english', label: 'Ngoại ngữ', icon: Languages, grades: ['10', '11', '12'] },
+  ],
+  daihoc: [
+    { value: 'math', label: 'Toán cao cấp', icon: Sigma, grades: [] },
+    { value: 'physics', label: 'Vật lí đại cương', icon: Atom, grades: [] },
+    { value: 'chemistry', label: 'Hóa học đại cương', icon: Beaker, grades: [] },
+    { value: 'biology', label: 'Sinh học đại cương', icon: Dna, grades: [] },
+    { value: 'philosophy', label: 'Lý luận chính trị', icon: BookCopy, grades: [] },
+    { value: 'english', label: 'Tiếng Anh học thuật', icon: Languages, grades: [] },
+  ],
 };
 
-function getDefaultSelections() {
-  const defaultLevel: EducationLevel = 'thpt';
-  const defaultGrade = '12';
-  const defaultSubject = 'math';
-  return { defaultLevel, defaultGrade, defaultSubject };
-}
-
+type Step = 'level' | 'grade' | 'subject' | 'mode' | 'chat' | 'quiz';
 
 export default function StudyBuddyClient() {
-  const { defaultLevel, defaultGrade, defaultSubject } = getDefaultSelections();
+  const [step, setStep] = useState<Step>('level');
+  
+  const [selectedLevel, setSelectedLevel] = useState<EducationLevel | null>(null);
+  const [selectedGrade, setSelectedGrade] = useState<string | null>(null);
+  const [selectedSubject, setSelectedSubject] = useState<string | null>(null);
 
-  const [selectedLevel, setSelectedLevel] = useState<EducationLevel>(defaultLevel);
-  const [grades, setGrades] = useState<Grade[]>(gradesByLevel[defaultLevel]);
-  const [selectedGrade, setSelectedGrade] = useState<string>(defaultGrade);
-  
-  const [subjects, setSubjects] = useState<Subject[]>(subjectMap[defaultLevel].filter(s => s.grades.includes(defaultGrade)));
-  const [selectedSubject, setSelectedSubject] = useState<string>(defaultSubject);
-  
   const [chatMessages, setChatMessages] = useState<Message[]>([]);
-  const [history, setHistory] = useState<Conversation[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isChatLoading, setChatLoading] = useState(false);
   const [documentContent, setDocumentContent] = useState<string | null>(null);
   const [documentName, setDocumentName] = useState<string | null>(null);
 
   const [quizData, setQuizData] = useState<QuizData | null>(null);
-  const [isQuizLoading, setQuizLoading] = useState(true);
+  const [isQuizLoading, setQuizLoading] = useState(false);
 
   const { toast } = useToast();
-  
-  const clearChat = useCallback(() => {
-    setChatMessages([]);
-    setDocumentContent(null);
-    setDocumentName(null);
-  }, []);
 
-  const onLevelChange = (level: EducationLevel) => {
+  const availableGrades = useMemo(() => {
+    if (!selectedLevel) return [];
+    return gradesByLevel[selectedLevel];
+  }, [selectedLevel]);
+
+  const availableSubjects = useMemo(() => {
+    if (!selectedLevel) return [];
+    if (selectedLevel === 'daihoc') {
+      return subjectMap.daihoc;
+    }
+    if (selectedGrade) {
+      return subjectMap[selectedLevel].filter(s => s.grades.includes(selectedGrade));
+    }
+    return [];
+  }, [selectedLevel, selectedGrade]);
+
+  const currentSubjectDetails = useMemo(() => {
+    if (!selectedLevel || !selectedSubject) return null;
+    return subjectMap[selectedLevel].find(s => s.value === selectedSubject) || null;
+  }, [selectedLevel, selectedSubject]);
+
+  const handleLevelSelect = (level: EducationLevel) => {
     setSelectedLevel(level);
-    const newGrades = gradesByLevel[level];
-    setGrades(newGrades);
-    
-    // Reset grade and subject
-    const newSelectedGrade = newGrades.length > 0 ? newGrades[0].value : undefined;
-    setSelectedGrade(newSelectedGrade as string);
-    
-    const newSubjects = subjectMap[level].filter(s => newSelectedGrade ? s.grades.includes(newSelectedGrade) : s.grades.length === 0);
-    setSubjects(newSubjects);
-    setSelectedSubject(newSubjects.length > 0 ? newSubjects[0].value : '');
-    
-    clearChat();
+    setSelectedGrade(null);
+    setSelectedSubject(null);
+    if (gradesByLevel[level].length === 0) { // Skip grade selection for University
+      setStep('subject');
+    } else {
+      setStep('grade');
+    }
   };
 
-  const onGradeChange = (grade: string) => {
+  const handleGradeSelect = (grade: string) => {
     setSelectedGrade(grade);
-    const newSubjects = subjectMap[selectedLevel].filter(s => s.grades.includes(grade));
-    setSubjects(newSubjects);
-    setSelectedSubject(newSubjects[0].value);
-    clearChat();
+    setSelectedSubject(null);
+    setStep('subject');
   };
 
-  const onSubjectChange = (subject: string) => {
+  const handleSubjectSelect = (subject: string) => {
     setSelectedSubject(subject);
-    clearChat();
+    setStep('mode');
+  };
+
+  const handleModeSelect = async (mode: 'chat' | 'quiz') => {
+    if (mode === 'chat') {
+        setChatMessages([]);
+        setDocumentContent(null);
+        setDocumentName(null);
+        setStep('chat');
+    }
+    if (mode === 'quiz') {
+      if (!selectedLevel || !selectedSubject) return;
+      setQuizLoading(true);
+      setQuizData(null);
+      setStep('quiz');
+      
+      const res = await getQuiz(selectedLevel, selectedSubject, selectedGrade || undefined);
+      
+      if (res.success && res.data) {
+        setQuizData(res.data);
+      } else {
+        toast({
+          variant: 'destructive',
+          title: 'Lỗi',
+          description: res.error || 'Không thể tạo bài ôn tập.',
+        });
+        setQuizData(null);
+      }
+      setQuizLoading(false);
+    }
+  };
+
+  const handleBack = () => {
+    switch (step) {
+      case 'quiz':
+      case 'chat':
+        setStep('mode');
+        break;
+      case 'mode':
+        setStep('subject');
+        break;
+      case 'subject':
+        if (selectedLevel === 'daihoc') {
+          setStep('level');
+        } else {
+          setStep('grade');
+        }
+        break;
+      case 'grade':
+        setStep('level');
+        break;
+    }
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -169,7 +215,7 @@ export default function StudyBuddyClient() {
       };
       reader.readAsText(file);
     }
-     e.target.value = '';
+    e.target.value = '';
   };
 
   const handleClearDocument = () => {
@@ -183,217 +229,214 @@ export default function StudyBuddyClient() {
 
   const handleQuestionSubmit = useCallback(
     async (question: string) => {
-      if (isLoading || !selectedLevel || !selectedSubject) return;
+      if (isChatLoading || !selectedLevel || !selectedSubject) return;
 
-      setIsLoading(true);
-      const userMessage: Message = {
-        id: `user-${Date.now()}`,
-        role: 'user',
-        content: question,
-      };
+      setChatLoading(true);
+      const userMessage: Message = { id: `user-${Date.now()}`, role: 'user', content: question };
       setChatMessages((prev) => [...prev, userMessage]);
 
       const res = await getTutorResponse(selectedLevel, selectedGrade || undefined, selectedSubject, question, documentContent);
-      setIsLoading(false);
+      setChatLoading(false);
 
       if (res.success && res.content) {
-        const assistantMessage: Message = {
-          id: `assistant-${Date.now()}`,
-          role: 'assistant',
-          content: res.content,
-        };
+        const assistantMessage: Message = { id: `assistant-${Date.now()}`, role: 'assistant', content: res.content };
         setChatMessages((prev) => [...prev, assistantMessage]);
-        
-        if(!documentContent) {
-          const newConversation: Conversation = {
-            id: `conv-${Date.now()}`,
-            level: selectedLevel,
-            grade: selectedGrade || undefined,
-            subject: selectedSubject,
-            question,
-            answer: res.content,
-          };
-          setHistory((prev) => [newConversation, ...prev]);
-        }
       } else {
-        toast({
-          variant: 'destructive',
-          title: 'Lỗi',
-          description: res.error || 'Đã có lỗi xảy ra.',
-        });
+        toast({ variant: 'destructive', title: 'Lỗi', description: res.error || 'Đã có lỗi xảy ra.' });
         setChatMessages((prev) => prev.slice(0, -1));
       }
     },
-    [isLoading, selectedLevel, selectedGrade, selectedSubject, toast, documentContent]
-  );
-
-  const handleSuggestQuestions = useCallback(
-    async (messageId: string, question: string) => {
-        if (!selectedSubject) return;
-      setChatMessages((prev) =>
-        prev.map((msg) =>
-          msg.id === messageId ? { ...msg, isSuggestingQuestions: true } : msg
-        )
-      );
-
-      const res = await getQuestionSuggestions(selectedSubject, question);
-
-      if (res.success && res.questions) {
-        setChatMessages((prev) =>
-          prev.map((msg) =>
-            msg.id === messageId
-              ? {
-                  ...msg,
-                  suggestedQuestions: res.questions,
-                  isSuggestingQuestions: false,
-                }
-              : msg
-          )
-        );
-      } else {
-        toast({
-          variant: 'destructive',
-          title: 'Lỗi',
-          description: res.error,
-        });
-        setChatMessages((prev) =>
-          prev.map((msg) =>
-            msg.id === messageId
-              ? { ...msg, isSuggestingQuestions: false }
-              : msg
-          )
-        );
-      }
-    },
-    [selectedSubject, toast]
+    [isChatLoading, selectedLevel, selectedGrade, selectedSubject, toast, documentContent]
   );
   
-  const handleGetQuiz = useCallback(async () => {
-    if (!selectedLevel || !selectedSubject) return;
+  const handleSuggestQuestions = useCallback(async (messageId: string, question: string) => {
+    if (!selectedSubject) return;
+    setChatMessages((prev) => prev.map((msg) => msg.id === messageId ? { ...msg, isSuggestingQuestions: true } : msg));
 
-    setQuizLoading(true);
-    setQuizData(null);
-    
-    const res = await getQuiz(selectedLevel, selectedSubject, selectedGrade || undefined);
+    const res = await getQuestionSuggestions(selectedSubject, question);
 
-    if (res.success && res.data) {
-      setQuizData(res.data);
+    if (res.success && res.questions) {
+      setChatMessages((prev) => prev.map((msg) => msg.id === messageId ? { ...msg, suggestedQuestions: res.questions, isSuggestingQuestions: false } : msg));
     } else {
-      toast({
-        variant: 'destructive',
-        title: 'Lỗi',
-        description: res.error || 'Không thể tạo bài ôn tập.',
-      });
-      setQuizData(null);
+      toast({ variant: 'destructive', title: 'Lỗi', description: res.error });
+      setChatMessages((prev) => prev.map((msg) => msg.id === messageId ? { ...msg, isSuggestingQuestions: false } : msg));
     }
-    setQuizLoading(false);
-  }, [selectedLevel, selectedGrade, selectedSubject, toast]);
+  }, [selectedSubject, toast]);
 
-  useEffect(() => {
-    handleGetQuiz();
-  }, [selectedSubject, handleGetQuiz]);
-
-  const currentSubjectDetails = useMemo(() => {
-    const allSubjects = subjectMap[selectedLevel];
-    return allSubjects.find((s) => s.value === selectedSubject);
-  }, [selectedLevel, selectedSubject]);
-
-  const renderSidebar = () => (
-    <div className="space-y-6">
-      <div className="space-y-2">
-        <Label htmlFor="level-select">Cấp học</Label>
-        <Select value={selectedLevel} onValueChange={(value) => onLevelChange(value as EducationLevel)}>
-          <SelectTrigger id="level-select">
-            <SelectValue placeholder="Chọn cấp học..." />
-          </SelectTrigger>
-          <SelectContent>
-            {educationLevels.map(level => (
-              <SelectItem key={level.value} value={level.value}>{level.label}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-      
-      {grades.length > 0 && (
-        <div className="space-y-2">
-          <Label htmlFor="grade-select">Lớp học</Label>
-          <Select value={selectedGrade} onValueChange={onGradeChange}>
-            <SelectTrigger id="grade-select">
-              <SelectValue placeholder="Chọn lớp học..." />
-            </SelectTrigger>
-            <SelectContent>
-              {grades.map(grade => (
-                <SelectItem key={grade.value} value={grade.value}>{grade.label}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-      )}
-
-      <div className="space-y-2">
-        <Label htmlFor="subject-select">Môn học</Label>
-         <Select value={selectedSubject} onValueChange={onSubjectChange} disabled={!selectedGrade && grades.length > 0}>
-            <SelectTrigger id="subject-select">
-              <SelectValue placeholder="Chọn môn học..." />
-            </SelectTrigger>
-            <SelectContent>
-              {subjects.map(subject => (
-                <SelectItem key={subject.value} value={subject.value}>{subject.label}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-      </div>
-    </div>
-  );
-
-  if (!currentSubjectDetails) {
+  const renderBreadcrumbs = () => {
+    if (step === 'level') return null;
+    const levelLabel = educationLevels.find(l => l.value === selectedLevel)?.label;
+    const gradeLabel = gradesByLevel[selectedLevel!]?.find(g => g.value === selectedGrade)?.label;
+    
     return (
-      <DashboardLayout>
-        <AppSidebar>
-          {renderSidebar()}
-        </AppSidebar>
-        <AppContent>
-          <div className="flex items-center justify-center h-full">
-            <p>Vui lòng chọn môn học.</p>
-          </div>
-        </AppContent>
-      </DashboardLayout>
-    );
-  }
-  
-  return (
-    <DashboardLayout>
-      <AppSidebar>
-        {renderSidebar()}
-      </AppSidebar>
-      <AppContent>
-        {isQuizLoading ? (
-            <div className="p-6 space-y-8">
-              <Skeleton className="h-32 w-full" />
-              <Skeleton className="h-64 w-full" />
-              <Skeleton className="h-64 w-full" />
-            </div>
-        ) : (
-          <QuizView 
-            key={selectedSubject} 
-            quizData={quizData} 
-            subject={currentSubjectDetails} 
-          />
+      <div className="flex items-center text-sm text-muted-foreground mb-4">
+        {levelLabel && <Button variant="link" className="p-0 h-auto" onClick={() => setStep('level')}>{levelLabel}</Button>}
+        {gradeLabel && (
+          <>
+            <ChevronRight className="h-4 w-4 mx-1" />
+            <Button variant="link" className="p-0 h-auto" onClick={() => setStep('grade')}>{gradeLabel}</Button>
+          </>
         )}
-      </AppContent>
-      <AppChatbar>
-         <ChatView
-            key={`${selectedLevel}-${selectedGrade}-${selectedSubject}`}
-            messages={chatMessages}
-            isLoading={isLoading}
-            selectedSubject={currentSubjectDetails}
-            documentName={documentName}
-            onSubmit={handleQuestionSubmit}
-            onSuggestQuestions={handleSuggestQuestions}
-            onFileChange={handleFileChange}
-            onClearDocument={handleClearDocument}
-          />
-      </AppChatbar>
-    </DashboardLayout>
+        {currentSubjectDetails && step !== 'subject' && (
+          <>
+            <ChevronRight className="h-4 w-4 mx-1" />
+            <Button variant="link" className="p-0 h-auto" onClick={() => setStep('subject')}>{currentSubjectDetails.label}</Button>
+          </>
+        )}
+      </div>
+    );
+  };
+  
+  const renderContent = () => {
+    switch (step) {
+      case 'level':
+        return (
+          <Card className="w-full max-w-lg">
+            <CardHeader>
+              <CardTitle>Chọn cấp học của bạn</CardTitle>
+              <CardDescription>Hãy bắt đầu bằng cách chọn cấp học bạn đang theo học.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              {educationLevels.map(level => (
+                <Button key={level.value} variant="outline" className="w-full justify-between" size="lg" onClick={() => handleLevelSelect(level.value)}>
+                  {level.label}
+                  <ChevronRight />
+                </Button>
+              ))}
+            </CardContent>
+          </Card>
+        );
+
+      case 'grade':
+        return (
+          <Card className="w-full max-w-lg">
+            <CardHeader>
+              {renderBreadcrumbs()}
+              <CardTitle>Chọn lớp học</CardTitle>
+              <CardDescription>Cung cấp thêm thông tin để cá nhân hóa trải nghiệm học tập.</CardDescription>
+            </CardHeader>
+            <CardContent className="grid grid-cols-2 gap-2">
+              {availableGrades.map(grade => (
+                <Button key={grade.value} variant="outline" size="lg" onClick={() => handleGradeSelect(grade.value)}>
+                  {grade.label}
+                </Button>
+              ))}
+            </CardContent>
+          </Card>
+        );
+
+      case 'subject':
+        return (
+          <Card className="w-full max-w-2xl">
+            <CardHeader>
+              {renderBreadcrumbs()}
+              <CardTitle>Chọn môn học</CardTitle>
+              <CardDescription>Bạn muốn học về môn gì hôm nay?</CardDescription>
+            </CardHeader>
+            <CardContent className="grid grid-cols-2 md:grid-cols-3 gap-3">
+              {availableSubjects.map(subject => (
+                <Button key={subject.value} variant="outline" className="h-20 flex-col gap-2" onClick={() => handleSubjectSelect(subject.value)}>
+                  <subject.icon className="h-6 w-6 text-primary" />
+                  <span>{subject.label}</span>
+                </Button>
+              ))}
+            </CardContent>
+          </Card>
+        );
+
+      case 'mode':
+        return (
+          <Card className="w-full max-w-lg">
+            <CardHeader>
+              {renderBreadcrumbs()}
+              <CardTitle>Chọn chế độ</CardTitle>
+              <CardDescription>Bạn muốn làm gì với môn {currentSubjectDetails?.label}?</CardDescription>
+            </CardHeader>
+            <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Button variant="outline" className="h-28 flex-col gap-2" onClick={() => handleModeSelect('chat')}>
+                <MessageCircle className="h-8 w-8 text-primary" />
+                <span className="font-semibold">Trò chuyện với AI</span>
+              </Button>
+              <Button variant="outline" className="h-28 flex-col gap-2" onClick={() => handleModeSelect('quiz')}>
+                <ClipboardList className="h-8 w-8 text-primary" />
+                <span className="font-semibold">Ôn tập kiến thức</span>
+              </Button>
+            </CardContent>
+          </Card>
+        );
+
+      case 'chat':
+        return (
+          <div className="h-full w-full max-w-4xl flex flex-col">
+            <header className="flex items-center gap-4 mb-4">
+               <Button variant="outline" size="icon" className="h-8 w-8" onClick={handleBack}>
+                <ArrowLeft className="h-4 w-4" />
+              </Button>
+              <div>
+                <h1 className="text-xl font-bold">Trò chuyện với AI</h1>
+                {renderBreadcrumbs()}
+              </div>
+            </header>
+            <div className="flex-1 min-h-0">
+               {currentSubjectDetails && (
+                <ChatView
+                    key={`${selectedLevel}-${selectedGrade}-${selectedSubject}`}
+                    messages={chatMessages}
+                    isLoading={isChatLoading}
+                    selectedSubject={currentSubjectDetails}
+                    documentName={documentName}
+                    onSubmit={handleQuestionSubmit}
+                    onSuggestQuestions={handleSuggestQuestions}
+                    onFileChange={handleFileChange}
+                    onClearDocument={handleClearDocument}
+                />
+               )}
+            </div>
+          </div>
+        );
+
+      case 'quiz':
+        return (
+            <div className="h-full w-full max-w-6xl flex flex-col">
+                 <header className="flex items-center gap-4 mb-4">
+                    <Button variant="outline" size="icon" className="h-8 w-8" onClick={handleBack}>
+                        <ArrowLeft className="h-4 w-4" />
+                    </Button>
+                    <div>
+                        <h1 className="text-xl font-bold">Ôn tập</h1>
+                        {renderBreadcrumbs()}
+                    </div>
+                </header>
+                <div className="flex-1 min-h-0 bg-background rounded-lg shadow-sm">
+                    {isQuizLoading ? (
+                        <div className="p-6 space-y-8">
+                            <Skeleton className="h-8 w-1/3" />
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <Skeleton className="h-48 w-full" />
+                                <Skeleton className="h-48 w-full" />
+                                <Skeleton className="h-64 w-full" />
+                                <Skeleton className="h-64 w-full" />
+                            </div>
+                        </div>
+                    ) : (
+                        currentSubjectDetails && <QuizView key={selectedSubject} quizData={quizData} subject={currentSubjectDetails} />
+                    )}
+                </div>
+            </div>
+        );
+
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <div className="h-full w-full flex flex-col items-center justify-center">
+        <div className="flex items-center gap-2 mb-8">
+            <BrainCircuit className="h-8 w-8 text-primary" />
+            <h1 className="font-bold text-3xl tracking-tight">StudyBuddy AI</h1>
+        </div>
+        {renderContent()}
+    </div>
   );
 }

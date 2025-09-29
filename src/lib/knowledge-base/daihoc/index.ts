@@ -1,4 +1,3 @@
-
 // src/lib/knowledge-base/daihoc/index.ts
 import { math } from './math';
 import { literature } from './literature';
@@ -20,10 +19,5 @@ export const knowledgeBase = {
     history,
     geography,
     english,
-    philosophy: civics,
-    'political-economy': civics,
-    'scientific-socialism': civics,
-    'party-history': civics,
+    philosophy: civics, // All political theory subjects point to the same knowledge base
 };
-
-    

@@ -5,7 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { CheckCircle, XCircle } from 'lucide-react';
 import type { QuizData, Subject } from '@/lib/types';
 import Flashcard from './flashcard';
@@ -40,35 +40,30 @@ export default function QuizView({ quizData, subject }: QuizViewProps) {
 
   if (!quizData) {
     return (
-      <div className="p-6">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <subject.icon className="h-6 w-6" />
-              Ôn tập: {subject.label}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground">Không có dữ liệu ôn tập cho môn học này.</p>
-          </CardContent>
-        </Card>
-      </div>
+      <Card className="h-full">
+        <CardContent className="h-full flex items-center justify-center">
+            <p className="text-muted-foreground">Không có dữ liệu ôn tập cho chủ đề này.</p>
+        </CardContent>
+      </Card>
     );
   }
 
   const topic = subject.label;
 
   return (
-    <div className="p-6">
-      <Tabs defaultValue="flashcards" className="w-full">
-        <div className="flex items-center justify-between mb-4">
-            <h2 className="text-2xl font-bold tracking-tight">Ôn tập: {topic}</h2>
+    <div className="h-full flex flex-col">
+      <Tabs defaultValue="flashcards" className="flex-1 flex flex-col min-h-0">
+        <div className="flex items-center justify-between mb-4 px-1">
+            <h2 className="text-2xl font-bold tracking-tight flex items-center gap-2">
+                <subject.icon className="h-6 w-6 text-primary" />
+                Ôn tập: {topic}
+            </h2>
             <TabsList>
               <TabsTrigger value="flashcards">Thẻ học tập</TabsTrigger>
               <TabsTrigger value="multiple-choice">Trắc nghiệm</TabsTrigger>
             </TabsList>
         </div>
-        <TabsContent value="flashcards">
+        <TabsContent value="flashcards" className="flex-1 overflow-y-auto p-1">
            <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3 py-4">
                 {quizData.flashcards.map((card, index) => (
                     <Flashcard key={index} question={card.question} answer={card.answer} />
@@ -76,7 +71,7 @@ export default function QuizView({ quizData, subject }: QuizViewProps) {
            </div>
            {quizData.flashcards.length === 0 && <p className="text-muted-foreground text-center py-8">Không có thẻ học tập nào.</p>}
         </TabsContent>
-        <TabsContent value="multiple-choice">
+        <TabsContent value="multiple-choice" className="flex-1 overflow-y-auto p-1">
             <div className="space-y-6 py-4">
                 {quizData.multipleChoice.map((mcq, index) => (
                     <Card key={index}>
@@ -110,7 +105,7 @@ export default function QuizView({ quizData, subject }: QuizViewProps) {
                 {quizData.multipleChoice.length === 0 && <p className="text-muted-foreground text-center py-8">Không có câu hỏi trắc nghiệm nào.</p>}
                 
                 {quizData.multipleChoice.length > 0 && (
-                  <div className="flex justify-end gap-2">
+                  <div className="flex justify-end gap-2 mt-6">
                       {submitted ? (
                           <Button onClick={resetQuiz}>Làm lại</Button>
                       ) : (
@@ -119,7 +114,7 @@ export default function QuizView({ quizData, subject }: QuizViewProps) {
                   </div>
                 )}
                 {submitted && (
-                    <Alert>
+                    <Alert className="mt-6">
                         <AlertTitle>Đã nộp bài!</AlertTitle>
                         <AlertDescription>
                             Xem lại kết quả của bạn ở trên. Nhấn "Làm lại" để thử lại lần nữa.

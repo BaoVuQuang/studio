@@ -9,13 +9,9 @@ import type { EducationLevel, QuizData } from '@/lib/types';
 
 export async function getTutorResponse(level: EducationLevel, grade: string | undefined, subject: string, question: string, documentContent: string | null) {
   try {
-    // If document content is provided, use it as the knowledge base.
-    // Otherwise, get knowledge base from pre-defined files.
     const knowledgeBase = documentContent ?? getKnowledgeBase(level, subject, grade);
     const response = await providePersonalizedTutoring({ subject, question, knowledgeBase });
     
-    // Use the detailed explanation if it exists and has content, otherwise use the general answer.
-    // This correctly handles greetings and simple conversations where only 'answer' is returned.
     const content = (response.explanation && response.explanation.trim() !== '') ? response.explanation : response.answer;
     
     return { success: true, content: content };
@@ -40,7 +36,6 @@ export async function getQuestionSuggestions(topic: string, question: string) {
     };
   }
 }
-
 
 export async function getQuiz(level: EducationLevel, subject: string, grade: string | undefined): Promise<{ success: boolean; data?: QuizData; error?: string }> {
   try {

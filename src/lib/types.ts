@@ -22,15 +22,6 @@ export type Message = {
   isSuggestingQuestions?: boolean;
 };
 
-export type Conversation = {
-  id:string;
-  level: EducationLevel;
-  grade?: string;
-  subject: string;
-  question: string;
-  answer: string;
-};
-
 // Types for Quiz feature
 export type Flashcard = {
   question: string;

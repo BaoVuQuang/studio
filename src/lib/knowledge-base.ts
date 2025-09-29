@@ -20,11 +20,10 @@ export function getKnowledgeBase(
   grade?: string // grade is kept for potential future use but not strictly needed for current logic
 ): string | undefined {
   const baseForLevel = knowledgeBases[level];
-
   if (!baseForLevel) {
     return undefined;
   }
-
+  
   // Direct lookup for subjects that exist in the knowledge base object for the selected level.
   return baseForLevel[subject as keyof typeof baseForLevel];
 }
