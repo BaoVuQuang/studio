@@ -14,7 +14,6 @@ import {
   Dna,
   Atom,
   Sigma,
-  Lightbulb,
   BookCopy,
 } from 'lucide-react';
 
@@ -58,7 +57,10 @@ const daihocSubjects: Subject[] = [
     { value: 'physics', label: 'Vật lí đại cương', icon: Atom },
     { value: 'chemistry', label: 'Hóa học đại cương', icon: Beaker },
     { value: 'biology', label: 'Sinh học đại cương', icon: Dna },
-    { value: 'civics', label: 'Các môn Lý luận chính trị', icon: BookCopy },
+    { value: 'philosophy', label: 'Triết học Mác-Lênin', icon: BookCopy },
+    { value: 'political-economy', label: 'Kinh tế chính trị Mác-Lênin', icon: BookCopy },
+    { value: 'scientific-socialism', label: 'Chủ nghĩa xã hội khoa học', icon: BookCopy },
+    { value: 'party-history', label: 'Lịch sử Đảng Cộng sản Việt Nam', icon: BookCopy },
     { value: 'english', label: 'Tiếng Anh học thuật/chuyên ngành', icon: Languages },
 ];
 
