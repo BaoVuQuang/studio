@@ -1,7 +1,7 @@
 // src/components/quiz-dialog.tsx
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -53,12 +53,11 @@ export default function QuizDialog({
         setSubmitted(false);
     }
     
-    // Reset state when dialog is closed or new data is loaded
-    useState(() => {
+    useEffect(() => {
         if (isOpen) {
           resetQuiz();
         }
-    });
+    }, [isOpen, quizData]);
 
 
   return (
