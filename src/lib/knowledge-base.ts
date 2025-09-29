@@ -1,3 +1,4 @@
+
 // src/lib/knowledge-base.ts
 import { knowledgeBase as thcsKnowledgeBase } from '@/lib/knowledge-base/thcs';
 import { knowledgeBase as thptKnowledgeBase } from '@/lib/knowledge-base/thpt';
@@ -9,14 +10,6 @@ const knowledgeBases = {
   thpt: thptKnowledgeBase,
   daihoc: daihocKnowledgeBase,
 };
-
-// Define a map for subjects that don't have a 1-to-1 mapping with file names
-const subjectFileMap: Record<string, string> = {
-    'political-economy': 'political-economy',
-    'scientific-socialism': 'scientific-socialism',
-    'party-history': 'party-history'
-};
-
 
 export function getKnowledgeBase(
   level: EducationLevel,
@@ -35,14 +28,8 @@ export function getKnowledgeBase(
     if (Object.prototype.hasOwnProperty.call(baseForLevel, subject)) {
         return baseForLevel[subject as keyof typeof baseForLevel];
     }
-
-    // Fallback for special cases if any, especially for 'daihoc'
-    if (level === 'daihoc') {
-        const mappedSubject = subjectFileMap[subject];
-        if (mappedSubject && Object.prototype.hasOwnProperty.call(baseForLevel, mappedSubject)) {
-            return baseForLevel[mappedSubject as keyof typeof baseForLevel];
-        }
-    }
   
     return undefined;
 }
+
+    

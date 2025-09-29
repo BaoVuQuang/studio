@@ -120,44 +120,43 @@ export default function StudyBuddyClient() {
     setDocumentName(null);
   }
 
-  // Update grades when level changes
+  // Effect to handle changes in level and grade selection
   useEffect(() => {
+    // 1. Determine available grades based on the selected level
     const newGrades = gradesByLevel[selectedLevel];
     setGrades(newGrades);
-    const newSelectedGrade = newGrades[0]?.value;
+    
+    // 2. Determine the new selected grade
+    // If it's a new level, default to the first grade.
+    // If the old grade is invalid for the new level, default to the first grade.
+    const currentGradeIsValid = newGrades.some(g => g.value === selectedGrade);
+    const newSelectedGrade = (selectedLevel === 'daihoc' || !currentGradeIsValid) ? newGrades[0]?.value : selectedGrade;
     setSelectedGrade(newSelectedGrade);
     
-    // Reset subjects and chat
-    setSubjects([]);
-    setSelectedSubject('');
-    handleNewChat();
-    clearDocumentWithoutToast();
-    
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedLevel]);
-  
-  // Update subjects when grade or level changes
-  useEffect(() => {
+    // 3. Determine available subjects based on the new level and grade
     let newSubjects: Subject[] = [];
     if (selectedLevel === 'daihoc') {
-      newSubjects = subjectMap.daihoc;
-    } else if (selectedGrade) {
-      newSubjects = subjectMap[selectedLevel].filter(s => s.grades.includes(selectedGrade));
+        newSubjects = subjectMap.daihoc;
+    } else if (newSelectedGrade) {
+        newSubjects = subjectMap[selectedLevel].filter(s => s.grades.includes(newSelectedGrade));
     }
-    
     setSubjects(newSubjects);
-    
-    // If the currently selected subject is not in the new list, reset it
-    if (newSubjects.length > 0 && !newSubjects.find(s => s.value === selectedSubject)) {
-      setSelectedSubject(newSubjects[0].value);
-    } else if (newSubjects.length === 0) {
-      setSelectedSubject('');
+
+    // 4. Determine the new selected subject
+    // If the old subject is not in the new list, default to the first subject.
+    const currentSubjectIsValid = newSubjects.some(s => s.value === selectedSubject);
+    const newSelectedSubject = (newSubjects.length > 0 && !currentSubjectIsValid) ? newSubjects[0].value : selectedSubject;
+    if (newSelectedSubject !== selectedSubject) {
+        setSelectedSubject(newSelectedSubject);
     }
     
+    // 5. Reset chat and document when context changes
     handleNewChat();
     clearDocumentWithoutToast();
+
+  // We only want this effect to re-run when the user explicitly changes level or grade
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedGrade, selectedLevel]);
+  }, [selectedLevel, selectedGrade]);
   
 
 
@@ -378,17 +377,26 @@ export default function StudyBuddyClient() {
         />
       </Sidebar>
       <SidebarInset>
-        <ChatView
-          messages={chatMessages}
-          isLoading={isLoading}
-          selectedSubject={currentSubject}
-          documentName={documentName}
-          onSubmit={handleQuestionSubmit}
-          onSuggestQuestions={handleSuggestQuestions}
-          onGenerateQuiz={handleGenerateQuiz}
-          onFileChange={handleFileChange}
-          onClearDocument={handleClearDocument}
-        />
+       {currentSubject ? (
+          <ChatView
+            key={currentSubject.value} // Add a key to force re-mount when subject changes
+            messages={chatMessages}
+            isLoading={isLoading}
+            selectedSubject={currentSubject}
+            documentName={documentName}
+            onSubmit={handleQuestionSubmit}
+            onSuggestQuestions={handleSuggestQuestions}
+            onGenerateQuiz={handleGenerateQuiz}
+            onFileChange={handleFileChange}
+            onClearDocument={handleClearDocument}
+          />
+        ) : (
+            <div className="flex h-full items-center justify-center p-4 text-center">
+                <div className="bg-card p-6 rounded-lg shadow-sm">
+                    <p className="text-muted-foreground">Vui lòng chọn Cấp học và Lớp học để xem các môn học có sẵn.</p>
+                </div>
+            </div>
+        )}
       </SidebarInset>
       <QuizDialog
         isOpen={isQuizDialogOpen}
@@ -401,3 +409,5 @@ export default function StudyBuddyClient() {
     </SidebarProvider>
   );
 }
+
+    

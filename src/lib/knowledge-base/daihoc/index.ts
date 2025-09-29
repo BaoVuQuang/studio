@@ -1,3 +1,4 @@
+
 // src/lib/knowledge-base/daihoc/index.ts
 import { math } from './math';
 import { literature } from './literature';
@@ -27,3 +28,5 @@ export const knowledgeBase = {
     'scientific-socialism': scientificSocialism,
     'party-history': partyHistory
 };
+
+    

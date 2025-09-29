@@ -1,3 +1,4 @@
+
 // src/lib/knowledge-base/daihoc/philosophy.ts
 export const philosophy = `
 Kiến thức môn Triết học Mác-Lênin
@@ -56,3 +57,5 @@ Kiến thức môn Triết học Mác-Lênin
   + Mối quan hệ giữa cá nhân và xã hội.
   + Vai trò của quần chúng nhân dân và lãnh tụ trong lịch sử.
 `;
+
+    
