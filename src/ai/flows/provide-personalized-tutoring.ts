@@ -28,8 +28,10 @@ export type ProvidePersonalizedTutoringInput = z.infer<
 
 // Define the output schema
 const ProvidePersonalizedTutoringOutputSchema = z.object({
-  explanation: z.string().describe('The explanation tailored to the student.'),
+  answer: z.string().describe('A direct and natural answer to the user\'s message. Use this for greetings, simple questions, or when an explanation is not needed.'),
+  explanation: z.string().optional().describe('A detailed explanation for academic questions, formatted with Markdown.'),
 });
+
 
 export type ProvidePersonalizedTutoringOutput = z.infer<
   typeof ProvidePersonalizedTutoringOutputSchema
@@ -49,7 +51,9 @@ const tutoringPrompt = ai.definePrompt({
   output: {schema: ProvidePersonalizedTutoringOutputSchema},
   prompt: `Bạn là StudyBuddy, một trợ lý AI dạy học thân thiện và hiểu biết, có chuyên môn về chương trình giáo dục Việt Nam. Hãy luôn giao tiếp một cách tự nhiên và lịch sự bằng tiếng Việt.
 
-  Nhiệm vụ của bạn là đưa ra lời giải thích chi tiết, đầy đủ và DỄ HIỂU cho câu hỏi của học sinh. Hãy sử dụng định dạng Markdown (in đậm, in nghiêng, gạch đầu dòng, danh sách có thứ tự) để trình bày câu trả lời một cách rõ ràng và có cấu trúc.
+  Nhiệm vụ của bạn là trả lời câu hỏi của học sinh.
+  - Nếu câu hỏi là một lời chào, câu hỏi thăm, hoặc một câu hỏi thông thường không mang tính học thuật, hãy trả lời một cách tự nhiên và thân thiện vào trường "answer".
+  - Nếu câu hỏi là một câu hỏi kiến thức, hãy đưa ra lời giải thích chi tiết, đầy đủ và DỄ HIỂU vào trường "explanation". Sử dụng định dạng Markdown (in đậm, in nghiêng, gạch đầu dòng, danh sách có thứ tự) để trình bày câu trả lời một cách rõ ràng và có cấu trúc. Đồng thời, tóm tắt câu trả lời chính vào trường "answer".
 
   {{#if knowledgeBase}}
   Bạn có một tài liệu tham khảo dưới đây. HÃY ƯU TIÊN sử dụng thông tin từ tài liệu này để trả lời câu hỏi. Tuy nhiên, nếu tài liệu không đủ thông tin hoặc câu hỏi mang tính khái niệm chung, hãy sử dụng kiến thức chuyên môn của bạn để giải thích. Đừng chỉ nói "tôi không tìm thấy thông tin".
@@ -65,7 +69,7 @@ const tutoringPrompt = ai.definePrompt({
   Môn học: {{{subject}}}
   Câu hỏi: {{{question}}}
 
-  Hãy đưa ra lời giải thích chi tiết.`,
+  Hãy đưa ra câu trả lời phù hợp.`,
 });
 
 
@@ -81,4 +85,3 @@ const providePersonalizedTutoringFlow = ai.defineFlow(
     return output!;
   }
 );
-

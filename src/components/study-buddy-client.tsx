@@ -191,11 +191,11 @@ export default function StudyBuddyClient() {
       const res = await getTutorResponse(selectedLevel, selectedSubject, question, documentContent);
       setIsLoading(false);
 
-      if (res.success && res.explanation) {
+      if (res.success && res.content) {
         const assistantMessage: Message = {
           id: `assistant-${Date.now()}`,
           role: 'assistant',
-          content: res.explanation,
+          content: res.content,
         };
         setChatMessages((prev) => [...prev, assistantMessage]);
         
@@ -206,7 +206,7 @@ export default function StudyBuddyClient() {
             level: selectedLevel,
             subject: selectedSubject,
             question,
-            answer: res.explanation,
+            answer: res.content,
           };
           setHistory((prev) => [newConversation, ...prev]);
         }
@@ -265,8 +265,8 @@ export default function StudyBuddyClient() {
   const handleGenerateQuiz = useCallback(
     async (topic: string) => {
       const currentSubject = subjects.find(s => s.value === selectedSubject);
-      const currentSubjectLabel = currentSubject?.label || 'chủ đề hiện tại';
-      const quizGenerationTopic = topic || currentSubjectLabel;
+      // Use the subject label as the topic for quiz generation. If the topic from the last question is too broad, this is a safe fallback.
+      const quizGenerationTopic = currentSubject?.label || 'chủ đề hiện tại';
 
       setIsGeneratingQuiz(true);
       setIsQuizDialogOpen(true);
