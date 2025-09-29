@@ -3,7 +3,6 @@ import { math } from './math';
 import { literature } from './literature';
 import { history } from './history';
 import { geography } from './geography';
-import { civics } from './civics';
 import { english } from './english';
 import { physics } from './physics';
 import { chemistry } from './chemistry';
@@ -22,9 +21,8 @@ export const knowledgeBase = {
     literature,
     history,
     geography,
-    'civics': civics,
-    'english': english,
-    'philosophy': philosophy,
+    english,
+    philosophy,
     'political-economy': politicalEconomy,
     'scientific-socialism': scientificSocialism,
     'party-history': partyHistory
