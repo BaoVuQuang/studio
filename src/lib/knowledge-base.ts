@@ -17,13 +17,23 @@ const knowledgeBases: Record<EducationLevel, KnowledgeBase> = {
 export function getKnowledgeBase(
   level: EducationLevel,
   subject: string,
-  grade?: string // grade is kept for potential future use but not strictly needed for current logic
+  grade?: string
 ): string | undefined {
   const baseForLevel = knowledgeBases[level];
   if (!baseForLevel) {
     return undefined;
   }
-  
-  // Direct lookup for subjects that exist in the knowledge base object for the selected level.
+
+  // For THPT, try to find a grade-specific knowledge base first.
+  // e.g., if subject is 'math' and grade is '10', look for 'math-10'.
+  if (level === 'thpt' && grade) {
+    const gradeSpecificKey = `${subject}-${grade}`;
+    if (gradeSpecificKey in baseForLevel) {
+      return baseForLevel[gradeSpecificKey as keyof typeof baseForLevel];
+    }
+  }
+
+  // Fallback to the general subject knowledge base if no grade-specific one is found,
+  // or for other education levels.
   return baseForLevel[subject as keyof typeof baseForLevel];
 }
