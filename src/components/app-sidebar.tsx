@@ -20,7 +20,7 @@ import {
   SidebarSeparator,
 } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
-import type { Conversation, Subject, EducationLevel } from '@/lib/types';
+import type { Conversation, Subject, EducationLevel, Grade } from '@/lib/types';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from './ui/accordion';
@@ -29,6 +29,9 @@ interface AppSidebarProps {
   levels: { value: EducationLevel, label: string }[];
   selectedLevel: EducationLevel;
   onLevelChange: (level: EducationLevel) => void;
+  grades: Grade[];
+  selectedGrade?: string;
+  onGradeChange: (grade: string) => void;
   subjects: Subject[];
   selectedSubject: string;
   onSubjectChange: (subject: string) => void;
@@ -42,6 +45,9 @@ export default function AppSidebar({
   levels,
   selectedLevel,
   onLevelChange,
+  grades,
+  selectedGrade,
+  onGradeChange,
   subjects,
   selectedSubject,
   onSubjectChange,
@@ -50,6 +56,12 @@ export default function AppSidebar({
   onHistoryClick,
   onNewChat,
 }: AppSidebarProps) {
+  const getGradeLabel = (level: EducationLevel, gradeValue?: string) => {
+    if (level === 'daihoc') return 'Đại học';
+    if (!gradeValue) return '';
+    return `Lớp ${gradeValue}`;
+  }
+
   return (
     <>
       <SidebarHeader>
@@ -78,9 +90,25 @@ export default function AppSidebar({
             </RadioGroup>
         </SidebarGroup>
         <SidebarSeparator/>
+        {grades.length > 0 && (
+          <>
+            <SidebarGroup>
+                <SidebarGroupLabel>Lớp học</SidebarGroupLabel>
+                <RadioGroup value={selectedGrade} onValueChange={onGradeChange} className="mt-2 grid grid-cols-2 gap-2">
+                    {grades.map(grade => (
+                        <div key={grade.value} className="flex items-center space-x-2">
+                            <RadioGroupItem value={grade.value} id={`grade-${grade.value}`} />
+                            <Label htmlFor={`grade-${grade.value}`} className="font-normal">{grade.label}</Label>
+                        </div>
+                    ))}
+                </RadioGroup>
+            </SidebarGroup>
+            <SidebarSeparator/>
+          </>
+        )}
         <SidebarGroup>
           <SidebarGroupLabel>Môn học</SidebarGroupLabel>
-          <Select value={selectedSubject} onValueChange={onSubjectChange}>
+          <Select value={selectedSubject} onValueChange={onSubjectChange} disabled={!selectedGrade && selectedLevel !== 'daihoc'}>
             <SelectTrigger className="w-full mt-2">
               <SelectValue placeholder="Chọn một môn học" />
             </SelectTrigger>
@@ -128,7 +156,7 @@ export default function AppSidebar({
                           >
                             <div className="flex flex-col gap-1 items-start w-full">
                               <span className="text-xs text-muted-foreground">
-                                {levels.find(l => l.value === conv.level)?.label}
+                                {levels.find(l => l.value === conv.level)?.label} - {getGradeLabel(conv.level, conv.grade)}
                               </span>
                               <span className="block truncate w-full text-wrap text-sm">
                                 {conv.question}

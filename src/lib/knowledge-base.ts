@@ -20,34 +20,29 @@ const subjectFileMap: Record<string, string> = {
 
 export function getKnowledgeBase(
   level: EducationLevel,
-  subject: string
+  subject: string,
+  grade?: string // Grade is now optional, especially for 'daihoc'
 ): string | undefined {
-  const baseForLevel = knowledgeBases[level];
-  if (baseForLevel && subject in baseForLevel) {
-    return baseForLevel[subject as keyof typeof baseForLevel];
-  }
-  // Fallback for special cases if any
-  if (level === 'daihoc') {
-      const mappedSubject = subjectFileMap[subject];
-      if (mappedSubject && mappedSubject in baseForLevel) {
-          return baseForLevel[mappedSubject as keyof typeof baseForLevel];
-      }
-  }
+    // For THCS and THPT, the knowledge base is the same for all grades within that level.
+    // The differentiation happens at the subject level.
+    const baseForLevel = knowledgeBases[level];
 
-  // Handle cases where a subject might exist in one level but is selected in another context
-  // or subjects that have different keys but share knowledge bases.
-  // For the new political subjects, they now have their own files, but we need to ensure they are correctly looked up.
-  // The structure `daihocKnowledgeBase` already has the correct keys from its `index.ts`.
-  // The issue is that the `subject` key might not exist directly if it's not mapped.
-  // The previous fix was almost right but the main index needs to be aware of the structure.
-  if (baseForLevel) {
-    // The keys in daihocKnowledgeBase are now 'philosophy', 'political-economy', etc.
-    // The subject value from the dropdown is also these keys.
-    // So a direct lookup should work.
-    if (Object.prototype.hasOwnProperty.call(baseForLevel, subject)) {
-      return baseForLevel[subject as keyof typeof baseForLevel];
+    if (!baseForLevel) {
+        return undefined;
     }
-  }
+    
+    // Direct lookup for subjects that exist in the knowledge base object.
+    if (Object.prototype.hasOwnProperty.call(baseForLevel, subject)) {
+        return baseForLevel[subject as keyof typeof baseForLevel];
+    }
 
-  return undefined;
+    // Fallback for special cases if any, especially for 'daihoc'
+    if (level === 'daihoc') {
+        const mappedSubject = subjectFileMap[subject];
+        if (mappedSubject && Object.prototype.hasOwnProperty.call(baseForLevel, mappedSubject)) {
+            return baseForLevel[mappedSubject as keyof typeof baseForLevel];
+        }
+    }
+  
+    return undefined;
 }

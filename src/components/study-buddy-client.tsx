@@ -22,47 +22,47 @@ import {
   Sidebar,
   SidebarInset,
 } from '@/components/ui/sidebar';
-import type { Conversation, Message, Subject, EducationLevel, QuizData } from '@/lib/types';
+import type { Conversation, Message, Subject, EducationLevel, QuizData, Grade } from '@/lib/types';
 import { getQuestionSuggestions, getTutorResponse, getQuiz } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
 import AppSidebar from '@/components/app-sidebar';
 import ChatView from '@/components/chat-view';
 import QuizDialog from './quiz-dialog';
 
-const thcsSubjects: Subject[] = [
-  { value: 'math', label: 'Toán học', icon: Calculator },
-  { value: 'physics', label: 'Vật lí', icon: FlaskConical },
-  { value: 'chemistry', label: 'Hóa học', icon: Beaker },
-  { value: 'biology', label: 'Sinh học', icon: Dna },
-  { value: 'literature', label: 'Ngữ văn', icon: BookOpen },
-  { value: 'history', label: 'Lịch sử', icon: Landmark },
-  { value: 'geography', label: 'Địa lí', icon: Globe },
-  { value: 'civics', label: 'GDCD', icon: Scale },
-  { value: 'english', label: 'Ngoại ngữ', icon: Languages },
+const allThcsSubjects: Subject[] = [
+  { value: 'math', label: 'Toán học', icon: Calculator, grades: ['6', '7', '8', '9'] },
+  { value: 'physics', label: 'Vật lí', icon: FlaskConical, grades: ['6', '7', '8', '9'] },
+  { value: 'chemistry', label: 'Hóa học', icon: Beaker, grades: ['8', '9'] },
+  { value: 'biology', label: 'Sinh học', icon: Dna, grades: ['6', '7', '8', '9'] },
+  { value: 'literature', label: 'Ngữ văn', icon: BookOpen, grades: ['6', '7', '8', '9'] },
+  { value: 'history', label: 'Lịch sử', icon: Landmark, grades: ['6', '7', '8', '9'] },
+  { value: 'geography', label: 'Địa lí', icon: Globe, grades: ['6', '7', '8', '9'] },
+  { value: 'civics', label: 'GDCD', icon: Scale, grades: ['6', '7', '8', '9'] },
+  { value: 'english', label: 'Ngoại ngữ', icon: Languages, grades: ['6', '7', '8', '9'] },
 ];
 
-const thptSubjects: Subject[] = [
-    { value: 'math', label: 'Toán học', icon: Calculator },
-    { value: 'physics', label: 'Vật lí', icon: FlaskConical },
-    { value: 'chemistry', label: 'Hóa học', icon: Beaker },
-    { value: 'biology', label: 'Sinh học', icon: Dna },
-    { value: 'literature', label: 'Ngữ văn', icon: BookOpen },
-    { value: 'history', label: 'Lịch sử', icon: Landmark },
-    { value: 'geography', label: 'Địa lí', icon: Globe },
-    { value: 'civics', label: 'GDCD/Kinh tế & PL', icon: Scale },
-    { value: 'english', label: 'Ngoại ngữ', icon: Languages },
+const allThptSubjects: Subject[] = [
+    { value: 'math', label: 'Toán học', icon: Calculator, grades: ['10', '11', '12'] },
+    { value: 'physics', label: 'Vật lí', icon: FlaskConical, grades: ['10', '11', '12'] },
+    { value: 'chemistry', label: 'Hóa học', icon: Beaker, grades: ['10', '11', '12'] },
+    { value: 'biology', label: 'Sinh học', icon: Dna, grades: ['10', '11', '12'] },
+    { value: 'literature', label: 'Ngữ văn', icon: BookOpen, grades: ['10', '11', '12'] },
+    { value: 'history', label: 'Lịch sử', icon: Landmark, grades: ['10', '11', '12'] },
+    { value: 'geography', label: 'Địa lí', icon: Globe, grades: ['10', '11', '12'] },
+    { value: 'civics', label: 'GDCD/Kinh tế & PL', icon: Scale, grades: ['10', '11', '12'] },
+    { value: 'english', label: 'Ngoại ngữ', icon: Languages, grades: ['10', '11', '12'] },
 ];
   
 const daihocSubjects: Subject[] = [
-    { value: 'math', label: 'Toán cao cấp', icon: Sigma },
-    { value: 'physics', label: 'Vật lí đại cương', icon: Atom },
-    { value: 'chemistry', label: 'Hóa học đại cương', icon: Beaker },
-    { value: 'biology', label: 'Sinh học đại cương', icon: Dna },
-    { value: 'philosophy', label: 'Triết học Mác-Lênin', icon: BookCopy },
-    { value: 'political-economy', label: 'Kinh tế chính trị Mác-Lênin', icon: BookCopy },
-    { value: 'scientific-socialism', label: 'Chủ nghĩa xã hội khoa học', icon: BookCopy },
-    { value: 'party-history', label: 'Lịch sử Đảng Cộng sản Việt Nam', icon: BookCopy },
-    { value: 'english', label: 'Tiếng Anh học thuật', icon: Languages },
+    { value: 'math', label: 'Toán cao cấp', icon: Sigma, grades: [] },
+    { value: 'physics', label: 'Vật lí đại cương', icon: Atom, grades: [] },
+    { value: 'chemistry', label: 'Hóa học đại cương', icon: Beaker, grades: [] },
+    { value: 'biology', label: 'Sinh học đại cương', icon: Dna, grades: [] },
+    { value: 'philosophy', label: 'Triết học Mác-Lênin', icon: BookCopy, grades: [] },
+    { value: 'political-economy', label: 'Kinh tế chính trị Mác-Lênin', icon: BookCopy, grades: [] },
+    { value: 'scientific-socialism', label: 'Chủ nghĩa xã hội khoa học', icon: BookCopy, grades: [] },
+    { value: 'party-history', label: 'Lịch sử Đảng Cộng sản Việt Nam', icon: BookCopy, grades: [] },
+    { value: 'english', label: 'Tiếng Anh học thuật', icon: Languages, grades: [] },
 ];
 
 
@@ -70,21 +70,38 @@ const educationLevels: { value: EducationLevel, label: string }[] = [
     { value: 'thcs', label: 'Trung học cơ sở (6-9)'},
     { value: 'thpt', label: 'Trung học phổ thông (10-12)'},
     { value: 'daihoc', label: 'Đại học'},
-]
+];
+
+const gradesByLevel: Record<EducationLevel, Grade[]> = {
+  thcs: [
+    { value: '6', label: 'Lớp 6' },
+    { value: '7', label: 'Lớp 7' },
+    { value: '8', label: 'Lớp 8' },
+    { value: '9', label: 'Lớp 9' },
+  ],
+  thpt: [
+    { value: '10', label: 'Lớp 10' },
+    { value: '11', label: 'Lớp 11' },
+    { value: '12', label: 'Lớp 12' },
+  ],
+  daihoc: [],
+};
+
 
 const subjectMap: Record<EducationLevel, Subject[]> = {
-    thcs: thcsSubjects,
-    thpt: thptSubjects,
+    thcs: allThcsSubjects,
+    thpt: allThptSubjects,
     daihoc: daihocSubjects,
 };
 
 
 export default function StudyBuddyClient() {
   const [selectedLevel, setSelectedLevel] = useState<EducationLevel>('thpt');
-  const [subjects, setSubjects] = useState<Subject[]>(subjectMap[selectedLevel]);
-  const [selectedSubject, setSelectedSubject] = useState<string>(
-    subjects[0].value
-  );
+  const [grades, setGrades] = useState<Grade[]>(gradesByLevel[selectedLevel]);
+  const [selectedGrade, setSelectedGrade] = useState<string | undefined>(gradesByLevel[selectedLevel][0]?.value);
+  const [subjects, setSubjects] = useState<Subject[]>([]);
+
+  const [selectedSubject, setSelectedSubject] = useState<string>('');
   const [chatMessages, setChatMessages] = useState<Message[]>([]);
   const [history, setHistory] = useState<Conversation[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -103,14 +120,46 @@ export default function StudyBuddyClient() {
     setDocumentName(null);
   }
 
+  // Update grades when level changes
   useEffect(() => {
-    const newSubjects = subjectMap[selectedLevel];
-    setSubjects(newSubjects);
-    setSelectedSubject(newSubjects[0].value);
-    clearDocumentWithoutToast();
+    const newGrades = gradesByLevel[selectedLevel];
+    setGrades(newGrades);
+    const newSelectedGrade = newGrades[0]?.value;
+    setSelectedGrade(newSelectedGrade);
+    
+    // Reset subjects and chat
+    setSubjects([]);
+    setSelectedSubject('');
     handleNewChat();
+    clearDocumentWithoutToast();
+    
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedLevel]);
+  
+  // Update subjects when grade or level changes
+  useEffect(() => {
+    let newSubjects: Subject[] = [];
+    if (selectedLevel === 'daihoc') {
+      newSubjects = subjectMap.daihoc;
+    } else if (selectedGrade) {
+      newSubjects = subjectMap[selectedLevel].filter(s => s.grades.includes(selectedGrade));
+    }
+    
+    setSubjects(newSubjects);
+    
+    // If the currently selected subject is not in the new list, reset it
+    if (newSubjects.length > 0 && !newSubjects.find(s => s.value === selectedSubject)) {
+      setSelectedSubject(newSubjects[0].value);
+    } else if (newSubjects.length === 0) {
+      setSelectedSubject('');
+    }
+    
+    handleNewChat();
+    clearDocumentWithoutToast();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedGrade, selectedLevel]);
+  
+
 
   const groupedHistory = useMemo(() => {
     return history.reduce((acc, conv) => {
@@ -171,6 +220,7 @@ export default function StudyBuddyClient() {
     ];
     setChatMessages(newMessages);
     setSelectedLevel(conversation.level);
+    setSelectedGrade(conversation.grade);
     setSelectedSubject(conversation.subject);
     setDocumentContent(null);
     setDocumentName(null);
@@ -188,7 +238,7 @@ export default function StudyBuddyClient() {
       };
       setChatMessages((prev) => [...prev, userMessage]);
 
-      const res = await getTutorResponse(selectedLevel, selectedSubject, question, documentContent);
+      const res = await getTutorResponse(selectedLevel, selectedGrade, selectedSubject, question, documentContent);
       setIsLoading(false);
 
       if (res.success && res.content) {
@@ -204,6 +254,7 @@ export default function StudyBuddyClient() {
           const newConversation: Conversation = {
             id: `conv-${Date.now()}`,
             level: selectedLevel,
+            grade: selectedGrade,
             subject: selectedSubject,
             question,
             answer: res.content,
@@ -219,7 +270,7 @@ export default function StudyBuddyClient() {
         setChatMessages((prev) => prev.slice(0, -1));
       }
     },
-    [isLoading, selectedLevel, selectedSubject, toast, documentContent]
+    [isLoading, selectedLevel, selectedGrade, selectedSubject, toast, documentContent]
   );
 
   const handleSuggestQuestions = useCallback(
@@ -273,7 +324,7 @@ export default function StudyBuddyClient() {
       setQuizData(null);
       setQuizTopic(quizGenerationTopic);
 
-      const res = await getQuiz(selectedLevel, selectedSubject, quizGenerationTopic);
+      const res = await getQuiz(selectedLevel, selectedGrade, selectedSubject, quizGenerationTopic);
       setIsGeneratingQuiz(false);
 
       if (res.success && res.data) {
@@ -287,8 +338,13 @@ export default function StudyBuddyClient() {
         setIsQuizDialogOpen(false); // Close dialog on error
       }
     },
-    [selectedLevel, selectedSubject, toast, subjects]
+    [selectedLevel, selectedGrade, selectedSubject, toast, subjects]
   );
+
+
+  const currentSubject = useMemo(() => {
+    return subjects.find((s) => s.value === selectedSubject) || subjects[0] || subjectMap[selectedLevel][0];
+  }, [subjects, selectedSubject, selectedLevel]);
 
 
   return (
@@ -299,6 +355,11 @@ export default function StudyBuddyClient() {
           selectedLevel={selectedLevel}
           onLevelChange={level => {
             setSelectedLevel(level);
+          }}
+          grades={grades}
+          selectedGrade={selectedGrade}
+          onGradeChange={grade => {
+            setSelectedGrade(grade);
           }}
           subjects={subjects}
           selectedSubject={selectedSubject}
@@ -320,9 +381,7 @@ export default function StudyBuddyClient() {
         <ChatView
           messages={chatMessages}
           isLoading={isLoading}
-          selectedSubject={
-            subjects.find((s) => s.value === selectedSubject) || subjects[0]
-          }
+          selectedSubject={currentSubject}
           documentName={documentName}
           onSubmit={handleQuestionSubmit}
           onSuggestQuestions={handleSuggestQuestions}
@@ -336,7 +395,7 @@ export default function StudyBuddyClient() {
         onOpenChange={setIsQuizDialogOpen}
         quizData={quizData}
         isLoading={isGeneratingQuiz}
-        subject={subjects.find((s) => s.value === selectedSubject) || subjects[0]}
+        subject={currentSubject}
         topic={quizTopic}
       />
     </SidebarProvider>

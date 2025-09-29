@@ -7,11 +7,11 @@ import { generateQuiz, type GenerateQuizOutput } from '@/ai/flows/generate-quiz'
 import { getKnowledgeBase } from '@/lib/knowledge-base';
 import type { EducationLevel } from '@/lib/types';
 
-export async function getTutorResponse(level: EducationLevel, subject: string, question: string, documentContent: string | null) {
+export async function getTutorResponse(level: EducationLevel, grade: string | undefined, subject: string, question: string, documentContent: string | null) {
   try {
     // If document content is provided, use it as the knowledge base.
     // Otherwise, get knowledge base from pre-defined files.
-    const knowledgeBase = documentContent ?? getKnowledgeBase(level, subject);
+    const knowledgeBase = documentContent ?? getKnowledgeBase(level, subject, grade);
     const response = await providePersonalizedTutoring({ subject, question, knowledgeBase });
     // Use the detailed explanation if available, otherwise use the general answer.
     const content = response.explanation || response.answer;
@@ -38,9 +38,9 @@ export async function getQuestionSuggestions(topic: string, question: string) {
   }
 }
 
-export async function getQuiz(level: EducationLevel, subject: string, topic: string): Promise<{ success: boolean; data?: GenerateQuizOutput; error?: string }> {
+export async function getQuiz(level: EducationLevel, grade: string | undefined, subject: string, topic: string): Promise<{ success: boolean; data?: GenerateQuizOutput; error?: string }> {
     try {
-      const context = getKnowledgeBase(level, subject);
+      const context = getKnowledgeBase(level, subject, grade);
       if (!context) {
         return { success: false, error: 'Không tìm thấy cơ sở kiến thức cho môn học này.' };
       }
