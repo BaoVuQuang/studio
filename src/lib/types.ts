@@ -14,8 +14,8 @@ export type Message = {
   id: string;
   role: 'user' | 'assistant';
   content: string;
-  resources?: string[];
-  isSuggestingResources?: boolean;
+  suggestedQuestions?: string[];
+  isSuggestingQuestions?: boolean;
 };
 
 export type Conversation = {

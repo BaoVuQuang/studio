@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Bot, LoaderCircle, Send, Sparkles, User, Paperclip, X, RefreshCw } from 'lucide-react';
+import { Bot, LoaderCircle, Send, Lightbulb, User, Paperclip, X, RefreshCw } from 'lucide-react';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -25,7 +25,7 @@ interface ChatViewProps {
   selectedSubject: Subject;
   documentName: string | null;
   onSubmit: (question: string) => Promise<void>;
-  onSuggestResources: (messageId: string, question: string) => Promise<void>;
+  onSuggestQuestions: (messageId: string, question: string) => Promise<void>;
   onGenerateQuiz: (topic: string) => void;
   onFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onClearDocument: () => void;
@@ -37,7 +37,7 @@ export default function ChatView({
   selectedSubject,
   documentName,
   onSubmit,
-  onSuggestResources,
+  onSuggestQuestions,
   onGenerateQuiz,
   onFileChange,
   onClearDocument,
@@ -61,6 +61,10 @@ export default function ChatView({
       onSubmit(question);
       setQuestion('');
     }
+  };
+  
+  const handleSuggestionClick = (suggestedQuestion: string) => {
+    onSubmit(suggestedQuestion);
   };
 
   const getLastUserQuestion = (assistantMessageId: string) => {
@@ -134,51 +138,44 @@ export default function ChatView({
                     <p className="whitespace-pre-wrap">{message.content}</p>
                     {message.role === 'assistant' && (
                       <div className="mt-4">
-                        {message.resources && (
+                        {message.suggestedQuestions && message.suggestedQuestions.length > 0 && (
                             <div>
                                 <Separator className="my-2" />
                                 <h4 className="font-semibold text-sm mb-2">
-                                Tài nguyên được đề xuất:
+                                Câu hỏi gợi ý:
                                 </h4>
-                                <ul className="space-y-1 text-sm list-disc pl-4">
-                                {message.resources.map((res, i) => (
-                                    <li key={i}>
-                                    <a
-                                        href={res}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="text-accent underline hover:no-underline"
-                                    >
-                                        {res}
-                                    </a>
-                                    </li>
+                                <div className="flex flex-wrap gap-2">
+                                {message.suggestedQuestions.map((q, i) => (
+                                    <Button key={i} size="sm" variant="outline" onClick={() => handleSuggestionClick(q)} disabled={isLoading}>
+                                      {q}
+                                    </Button>
                                 ))}
-                                </ul>
+                                </div>
                             </div>
                         )}
-                        <div className="flex items-center gap-2 mt-2">
-                          {!message.resources && (
+                        <div className="flex items-center gap-2 mt-4">
+                          {!message.suggestedQuestions && (
                             <Button
                                 variant="ghost"
                                 size="sm"
                                 className="text-accent hover:text-accent px-2"
                                 onClick={() =>
-                                onSuggestResources(
+                                onSuggestQuestions(
                                     message.id,
                                     getLastUserQuestion(message.id)
                                 )
                                 }
-                                disabled={message.isSuggestingResources}
+                                disabled={message.isSuggestingQuestions}
                             >
-                                {message.isSuggestingResources ? (
+                                {message.isSuggestingQuestions ? (
                                 <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />
                                 ) : (
-                                <Sparkles className="mr-2 h-4 w-4" />
+                                <Lightbulb className="mr-2 h-4 w-4" />
                                 )}
-                                Gợi ý tài nguyên
+                                Gợi ý câu hỏi
                             </Button>
                           )}
-                          {!message.resources && <Separator orientation="vertical" className="h-6" />}
+                           <Separator orientation="vertical" className="h-6" />
                           <Button
                               variant="ghost"
                               size="sm"

@@ -23,7 +23,7 @@ import {
   SidebarInset,
 } from '@/components/ui/sidebar';
 import type { Conversation, Message, Subject, EducationLevel, QuizData } from '@/lib/types';
-import { getResourceSuggestions, getTutorResponse, getQuiz } from '@/app/actions';
+import { getQuestionSuggestions, getTutorResponse, getQuiz } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
 import AppSidebar from '@/components/app-sidebar';
 import ChatView from '@/components/chat-view';
@@ -146,8 +146,7 @@ export default function StudyBuddyClient() {
   };
 
   const handleClearDocument = () => {
-    setDocumentContent(null);
-    setDocumentName(null);
+    clearDocumentWithoutToast();
     toast({
       title: "Đã bỏ tài liệu",
       description: "Cuộc trò chuyện đã quay lại chế độ bình thường.",
@@ -224,24 +223,24 @@ export default function StudyBuddyClient() {
     [isLoading, selectedLevel, selectedSubject, toast, documentContent]
   );
 
-  const handleSuggestResources = useCallback(
+  const handleSuggestQuestions = useCallback(
     async (messageId: string, question: string) => {
       setChatMessages((prev) =>
         prev.map((msg) =>
-          msg.id === messageId ? { ...msg, isSuggestingResources: true } : msg
+          msg.id === messageId ? { ...msg, isSuggestingQuestions: true } : msg
         )
       );
 
-      const res = await getResourceSuggestions(selectedSubject, question);
+      const res = await getQuestionSuggestions(selectedSubject, question);
 
-      if (res.success && res.resources) {
+      if (res.success && res.questions) {
         setChatMessages((prev) =>
           prev.map((msg) =>
             msg.id === messageId
               ? {
                   ...msg,
-                  resources: res.resources,
-                  isSuggestingResources: false,
+                  suggestedQuestions: res.questions,
+                  isSuggestingQuestions: false,
                 }
               : msg
           )
@@ -255,7 +254,7 @@ export default function StudyBuddyClient() {
         setChatMessages((prev) =>
           prev.map((msg) =>
             msg.id === messageId
-              ? { ...msg, isSuggestingResources: false }
+              ? { ...msg, isSuggestingQuestions: false }
               : msg
           )
         );
@@ -326,7 +325,7 @@ export default function StudyBuddyClient() {
           }
           documentName={documentName}
           onSubmit={handleQuestionSubmit}
-          onSuggestResources={handleSuggestResources}
+          onSuggestQuestions={handleSuggestQuestions}
           onGenerateQuiz={handleGenerateQuiz}
           onFileChange={handleFileChange}
           onClearDocument={handleClearDocument}

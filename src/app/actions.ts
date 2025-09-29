@@ -2,7 +2,7 @@
 'use server';
 
 import { providePersonalizedTutoring } from '@/ai/flows/provide-personalized-tutoring';
-import { suggestLearningResources } from '@/ai/flows/suggest-learning-resources';
+import { suggestQuestions } from '@/ai/flows/suggest-questions';
 import { generateQuiz, type GenerateQuizOutput } from '@/ai/flows/generate-quiz';
 import { getKnowledgeBase } from '@/lib/knowledge-base';
 import type { EducationLevel } from '@/lib/types';
@@ -23,15 +23,15 @@ export async function getTutorResponse(level: EducationLevel, subject: string, q
   }
 }
 
-export async function getResourceSuggestions(topic: string, needs: string) {
+export async function getQuestionSuggestions(topic: string, needs: string) {
   try {
-    const response = await suggestLearningResources({ topic, needs });
-    return { success: true, resources: response.resources };
+    const response = await suggestQuestions({ topic, needs });
+    return { success: true, questions: response.questions };
   } catch (error) {
     console.error(error);
     return {
       success: false,
-      error: 'Đã có lỗi xảy ra khi gợi ý tài nguyên. Vui lòng thử lại.',
+      error: 'Đã có lỗi xảy ra khi gợi ý câu hỏi. Vui lòng thử lại.',
     };
   }
 }
