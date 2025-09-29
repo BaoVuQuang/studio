@@ -5,6 +5,8 @@ import { useState, useRef, useEffect } from 'react';
 import { Bot, LoaderCircle, Send, Lightbulb, User, Paperclip, X, RefreshCw } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import remarkMath from 'remark-math';
+import { BlockMath, InlineMath } from 'react-katex';
 
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -138,11 +140,31 @@ export default function ChatView({
                         : 'bg-card border'
                     )}
                   >
-                     <ReactMarkdown remarkPlugins={[remarkGfm]}
+                     <ReactMarkdown 
+                      remarkPlugins={[remarkGfm, remarkMath]}
                       components={{
                         p: ({node, ...props}) => <p className="mb-2 last:mb-0" {...props} />,
                         ol: ({node, ...props}) => <ol className="list-decimal list-inside" {...props} />,
                         ul: ({node, ...props}) => <ul className="list-disc list-inside" {...props} />,
+                        math: ({value}) => <BlockMath math={value} />,
+                        inlineMath: ({value}) => <InlineMath math={value} />,
+                        code(props) {
+                          const {children, className, node, ...rest} = props
+                          const match = /language-(\w+)/.exec(className || '')
+                          if (String(children).startsWith('$$') && String(children).endsWith('$$')) {
+                            const math = String(children).slice(2, -2)
+                            return <BlockMath math={math} />
+                          }
+                          if (String(children).startsWith('$') && String(children).endsWith('$')) {
+                            const math = String(children).slice(1, -1)
+                            return <InlineMath math={math} />
+                          }
+                          return (
+                            <code {...rest} className={className}>
+                              {children}
+                            </code>
+                          )
+                        }
                       }}
                      >
                         {message.content}
