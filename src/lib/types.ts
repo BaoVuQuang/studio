@@ -1,6 +1,4 @@
 import type { LucideIcon } from 'lucide-react';
-import {type GenerateQuizOutput} from '@/ai/flows/generate-quiz';
-
 
 export type EducationLevel = 'thcs' | 'thpt' | 'daihoc';
 
@@ -32,5 +30,3 @@ export type Conversation = {
   question: string;
   answer: string;
 };
-
-export type QuizData = GenerateQuizOutput;

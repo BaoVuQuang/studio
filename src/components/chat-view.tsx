@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Bot, LoaderCircle, Send, Lightbulb, User, Paperclip, X, RefreshCw } from 'lucide-react';
+import { Bot, LoaderCircle, Send, Lightbulb, User, Paperclip, X } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
@@ -31,7 +31,6 @@ interface ChatViewProps {
   documentName: string | null;
   onSubmit: (question: string) => Promise<void>;
   onSuggestQuestions: (messageId: string, question: string) => Promise<void>;
-  onGenerateQuiz: (topic: string) => void;
   onFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onClearDocument: () => void;
 }
@@ -43,7 +42,6 @@ export default function ChatView({
   documentName,
   onSubmit,
   onSuggestQuestions,
-  onGenerateQuiz,
   onFileChange,
   onClearDocument,
 }: ChatViewProps) {
@@ -186,8 +184,7 @@ export default function ChatView({
                                 </div>
                             </div>
                         )}
-                        <div className="flex items-center gap-2 mt-4">
-                          {!message.suggestedQuestions && (
+                        {!message.suggestedQuestions && (
                             <Button
                                 variant="ghost"
                                 size="sm"
@@ -208,17 +205,6 @@ export default function ChatView({
                                 Gợi ý câu hỏi
                             </Button>
                           )}
-                           <Separator orientation="vertical" className="h-6" />
-                          <Button
-                              variant="ghost"
-                              size="sm"
-                              className="text-accent hover:text-accent px-2"
-                              onClick={() => onGenerateQuiz(getLastUserQuestion(message.id))}
-                          >
-                              <RefreshCw className="mr-2 h-4 w-4" />
-                              Ôn tập
-                          </Button>
-                        </div>
                       </div>
                     )}
                   </div>

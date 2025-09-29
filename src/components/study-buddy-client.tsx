@@ -22,12 +22,11 @@ import {
   Sidebar,
   SidebarInset,
 } from '@/components/ui/sidebar';
-import type { Conversation, Message, Subject, EducationLevel, QuizData, Grade } from '@/lib/types';
-import { getQuestionSuggestions, getTutorResponse, getQuiz } from '@/app/actions';
+import type { Conversation, Message, Subject, EducationLevel, Grade } from '@/lib/types';
+import { getQuestionSuggestions, getTutorResponse } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
 import AppSidebar from '@/components/app-sidebar';
 import ChatView from '@/components/chat-view';
-import QuizDialog from './quiz-dialog';
 
 const allThcsSubjects: Subject[] = [
   { value: 'math', label: 'Toán học', icon: Calculator, grades: ['6', '7', '8', '9'] },
@@ -107,10 +106,6 @@ export default function StudyBuddyClient() {
   const [isLoading, setIsLoading] = useState(false);
   const [documentContent, setDocumentContent] = useState<string | null>(null);
   const [documentName, setDocumentName] = useState<string | null>(null);
-  const [quizData, setQuizData] = useState<QuizData | null>(null);
-  const [isQuizDialogOpen, setIsQuizDialogOpen] = useState(false);
-  const [isGeneratingQuiz, setIsGeneratingQuiz] = useState(false);
-  const [quizTopic, setQuizTopic] = useState<string>('');
 
 
   const { toast } = useToast();
@@ -302,35 +297,6 @@ export default function StudyBuddyClient() {
     [selectedSubject, toast]
   );
 
-  const handleGenerateQuiz = useCallback(
-    async (topic: string) => {
-      const currentSubjectInfo = subjects.find(s => s.value === selectedSubject);
-      // Use the subject label as the topic for quiz generation for better consistency
-      const quizGenerationTopic = currentSubjectInfo?.label || 'chủ đề hiện tại';
-
-      setIsGeneratingQuiz(true);
-      setIsQuizDialogOpen(true);
-      setQuizData(null);
-      setQuizTopic(quizGenerationTopic);
-
-      const res = await getQuiz(selectedLevel, selectedGrade, selectedSubject, quizGenerationTopic);
-      setIsGeneratingQuiz(false);
-
-      if (res.success && res.data) {
-        setQuizData(res.data);
-      } else {
-        toast({
-          variant: 'destructive',
-          title: 'Lỗi',
-          description: res.error,
-        });
-        setIsQuizDialogOpen(false); // Close dialog on error
-      }
-    },
-    [selectedLevel, selectedGrade, selectedSubject, toast, subjects]
-  );
-
-
   const currentSubject = useMemo(() => {
     return subjects.find((s) => s.value === selectedSubject);
   }, [subjects, selectedSubject]);
@@ -380,7 +346,6 @@ export default function StudyBuddyClient() {
             documentName={documentName}
             onSubmit={handleQuestionSubmit}
             onSuggestQuestions={handleSuggestQuestions}
-            onGenerateQuiz={handleGenerateQuiz}
             onFileChange={handleFileChange}
             onClearDocument={handleClearDocument}
           />
@@ -392,14 +357,6 @@ export default function StudyBuddyClient() {
             </div>
         )}
       </SidebarInset>
-      <QuizDialog
-        isOpen={isQuizDialogOpen}
-        onOpenChange={setIsQuizDialogOpen}
-        quizData={quizData}
-        isLoading={isGeneratingQuiz}
-        subject={currentSubject}
-        topic={quizTopic}
-      />
     </SidebarProvider>
   );
 }
