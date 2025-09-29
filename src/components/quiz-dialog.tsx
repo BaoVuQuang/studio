@@ -28,6 +28,7 @@ interface QuizDialogProps {
   quizData: QuizData | null;
   isLoading: boolean;
   subject: Subject;
+  topic: string;
 }
 
 export default function QuizDialog({
@@ -36,6 +37,7 @@ export default function QuizDialog({
   quizData,
   isLoading,
   subject,
+  topic,
 }: QuizDialogProps) {
     const [selectedAnswers, setSelectedAnswers] = useState<Record<number, string>>({});
     const [submitted, setSubmitted] = useState(false);
@@ -69,7 +71,7 @@ export default function QuizDialog({
             Ôn tập: {subject.label}
           </DialogTitle>
           <DialogDescription>
-            Kiểm tra kiến thức của bạn với thẻ học tập và câu hỏi trắc nghiệm.
+            Kiểm tra kiến thức của bạn về chủ đề "{topic}" với thẻ học tập và câu hỏi trắc nghiệm.
           </DialogDescription>
         </DialogHeader>
 

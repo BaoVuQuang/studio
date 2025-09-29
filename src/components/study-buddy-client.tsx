@@ -42,19 +42,20 @@ const thcsSubjects: Subject[] = [
 ];
 
 const thptSubjects: Subject[] = [
-  { value: 'math', label: 'Toán học', icon: Calculator },
-  { value: 'physics', label: 'Vật lí', icon: FlaskConical },
-  { value: 'chemistry', label: 'Hóa học', icon: Beaker },
-  { value: 'biology', label: 'Sinh học', icon: Dna },
-  { value: 'literature', label: 'Ngữ văn', icon: BookOpen },
-  { value: 'history', label: 'Lịch sử', icon: Landmark },
-  { value: 'geography', label: 'Địa lí', icon: Globe },
-  { value: 'civics', label: 'GDCD/Kinh tế & PL', icon: Scale },
-  { value: 'english', label: 'Ngoại ngữ', icon: Languages },
+    { value: 'math', label: 'Toán học', icon: Calculator },
+    { value: 'physics', label: 'Vật lí', icon: FlaskConical },
+    { value: 'chemistry', label: 'Hóa học', icon: Beaker },
+    { value: 'biology', label: 'Sinh học', icon: Dna },
+    { value: 'literature', label: 'Ngữ văn', icon: BookOpen },
+    { value: 'history', label: 'Lịch sử', icon: Landmark },
+    { value: 'geography', label: 'Địa lí', icon: Globe },
+    { value: 'civics', label: 'GDCD/Kinh tế & PL', icon: Scale },
+    { value: 'english', label: 'Ngoại ngữ', icon: Languages },
 ];
+  
 
 const daihocSubjects: Subject[] = [
-    { value: 'math', label: 'Toán cao cấp (Giải tích, ĐSTT)', icon: Sigma },
+    { value: 'math', label: 'Toán cao cấp', icon: Sigma },
     { value: 'physics', label: 'Vật lí đại cương', icon: Atom },
     { value: 'chemistry', label: 'Hóa học đại cương', icon: Beaker },
     { value: 'biology', label: 'Sinh học đại cương', icon: Dna },
@@ -62,7 +63,7 @@ const daihocSubjects: Subject[] = [
     { value: 'political-economy', label: 'Kinh tế chính trị Mác-Lênin', icon: BookCopy },
     { value: 'scientific-socialism', label: 'Chủ nghĩa xã hội khoa học', icon: BookCopy },
     { value: 'party-history', label: 'Lịch sử Đảng Cộng sản Việt Nam', icon: BookCopy },
-    { value: 'english', label: 'Tiếng Anh học thuật/chuyên ngành', icon: Languages },
+    { value: 'english', label: 'Tiếng Anh học thuật', icon: Languages },
 ];
 
 
@@ -93,6 +94,7 @@ export default function StudyBuddyClient() {
   const [quizData, setQuizData] = useState<QuizData | null>(null);
   const [isQuizDialogOpen, setIsQuizDialogOpen] = useState(false);
   const [isGeneratingQuiz, setIsGeneratingQuiz] = useState(false);
+  const [quizTopic, setQuizTopic] = useState<string>('');
 
 
   const { toast } = useToast();
@@ -264,20 +266,16 @@ export default function StudyBuddyClient() {
 
   const handleGenerateQuiz = useCallback(
     async (topic: string) => {
-      if (!topic) {
-        toast({
-            variant: 'destructive',
-            title: 'Lỗi',
-            description: 'Không có chủ đề để tạo câu hỏi ôn tập.',
-        });
-        return;
-      }
-      setIsGeneratingQuiz(true);
-      setIsQuizDialogOpen(true); // Open dialog with loading state
-      setQuizData(null);
+        const currentSubjectLabel = subjects.find(s => s.value === selectedSubject)?.label || 'chủ đề hiện tại';
+        const quizGenerationTopic = topic || currentSubjectLabel;
+
+        setIsGeneratingQuiz(true);
+        setIsQuizDialogOpen(true);
+        setQuizData(null);
+        setQuizTopic(quizGenerationTopic);
   
-      const res = await getQuiz(selectedLevel, selectedSubject, topic);
-      setIsGeneratingQuiz(false);
+        const res = await getQuiz(selectedLevel, selectedSubject, quizGenerationTopic);
+        setIsGeneratingQuiz(false);
   
       if (res.success && res.data) {
         setQuizData(res.data);
@@ -290,7 +288,7 @@ export default function StudyBuddyClient() {
         setIsQuizDialogOpen(false); // Close dialog on error
       }
     },
-    [selectedLevel, selectedSubject, toast]
+    [selectedLevel, selectedSubject, toast, subjects]
   );
 
 
@@ -315,7 +313,7 @@ export default function StudyBuddyClient() {
           onHistoryClick={handleHistoryClick}
           onNewChat={() => {
             handleNewChat();
-            handleClearDocument();
+            clearDocumentWithoutToast();
           }}
         />
       </Sidebar>
@@ -340,6 +338,7 @@ export default function StudyBuddyClient() {
         quizData={quizData}
         isLoading={isGeneratingQuiz}
         subject={subjects.find((s) => s.value === selectedSubject) || subjects[0]}
+        topic={quizTopic}
       />
     </SidebarProvider>
   );
