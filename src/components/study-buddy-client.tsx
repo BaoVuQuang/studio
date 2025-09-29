@@ -53,7 +53,6 @@ const thptSubjects: Subject[] = [
     { value: 'english', label: 'Ngoại ngữ', icon: Languages },
 ];
   
-
 const daihocSubjects: Subject[] = [
     { value: 'math', label: 'Toán cao cấp', icon: Sigma },
     { value: 'physics', label: 'Vật lí đại cương', icon: Atom },
@@ -265,17 +264,18 @@ export default function StudyBuddyClient() {
 
   const handleGenerateQuiz = useCallback(
     async (topic: string) => {
-        const currentSubjectLabel = subjects.find(s => s.value === selectedSubject)?.label || 'chủ đề hiện tại';
-        const quizGenerationTopic = topic || currentSubjectLabel;
+      const currentSubject = subjects.find(s => s.value === selectedSubject);
+      const currentSubjectLabel = currentSubject?.label || 'chủ đề hiện tại';
+      const quizGenerationTopic = topic || currentSubjectLabel;
 
-        setIsGeneratingQuiz(true);
-        setIsQuizDialogOpen(true);
-        setQuizData(null);
-        setQuizTopic(quizGenerationTopic);
-  
-        const res = await getQuiz(selectedLevel, selectedSubject, quizGenerationTopic);
-        setIsGeneratingQuiz(false);
-  
+      setIsGeneratingQuiz(true);
+      setIsQuizDialogOpen(true);
+      setQuizData(null);
+      setQuizTopic(quizGenerationTopic);
+
+      const res = await getQuiz(selectedLevel, selectedSubject, quizGenerationTopic);
+      setIsGeneratingQuiz(false);
+
       if (res.success && res.data) {
         setQuizData(res.data);
       } else {

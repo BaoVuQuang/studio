@@ -23,9 +23,9 @@ export async function getTutorResponse(level: EducationLevel, subject: string, q
   }
 }
 
-export async function getQuestionSuggestions(topic: string, needs: string) {
+export async function getQuestionSuggestions(topic: string, question: string) {
   try {
-    const response = await suggestQuestions({ topic, needs });
+    const response = await suggestQuestions({ topic, question });
     return { success: true, questions: response.questions };
   } catch (error) {
     console.error(error);
