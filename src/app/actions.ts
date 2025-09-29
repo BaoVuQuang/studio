@@ -1,7 +1,7 @@
 
 'use server';
 
-import { providePersonalizedTutoring } from '@/ai/flows/provide-personalized-tutoring';
+import { providePersonalizedTutoring, type ProvidePersonalizedTutoringInput } from '@/ai/flows/provide-personalized-tutoring';
 import { suggestQuestions } from '@/ai/flows/suggest-questions';
 import { generateQuiz } from '@/ai/flows/generate-quiz';
 import { getKnowledgeBase } from '@/lib/knowledge-base';
@@ -10,7 +10,13 @@ import type { EducationLevel, QuizData } from '@/lib/types';
 export async function getTutorResponse(level: EducationLevel, grade: string | undefined, subject: string, question: string, documentContent: string | null) {
   try {
     const knowledgeBase = documentContent ?? getKnowledgeBase(level, subject, grade);
-    const response = await providePersonalizedTutoring({ subject, question, knowledgeBase });
+    
+    const input: ProvidePersonalizedTutoringInput = { subject, question };
+    if (knowledgeBase) {
+      input.knowledgeBase = knowledgeBase;
+    }
+
+    const response = await providePersonalizedTutoring(input);
     
     const content = (response.explanation && response.explanation.trim() !== '') ? response.explanation : response.answer;
     
@@ -58,3 +64,4 @@ export async function getQuiz(level: EducationLevel, subject: string, grade: str
     };
   }
 }
+
