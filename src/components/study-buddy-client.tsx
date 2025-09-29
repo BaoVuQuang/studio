@@ -97,12 +97,18 @@ export default function StudyBuddyClient() {
 
   const { toast } = useToast();
 
+  const clearDocumentWithoutToast = () => {
+    setDocumentContent(null);
+    setDocumentName(null);
+  }
+
   useEffect(() => {
     const newSubjects = subjectMap[selectedLevel];
     setSubjects(newSubjects);
     setSelectedSubject(newSubjects[0].value);
-    handleClearDocument();
+    clearDocumentWithoutToast();
     handleNewChat();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedLevel]);
 
   const groupedHistory = useMemo(() => {
@@ -301,7 +307,7 @@ export default function StudyBuddyClient() {
           selectedSubject={selectedSubject}
           onSubjectChange={subject => {
             setSelectedSubject(subject);
-            handleClearDocument();
+            clearDocumentWithoutToast();
             handleNewChat();
           }}
           history={history}
