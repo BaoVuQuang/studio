@@ -61,5 +61,4 @@ Kiến thức các môn Lý luận chính trị cấp Đại học
 - **Hệ thống pháp luật và quan hệ pháp luật Việt Nam.**
 - **Một số ngành luật cơ bản:** Luật Hiến pháp, Luật Hành chính, Luật Dân sự, Luật Hình sự, Luật Hôn nhân và gia đình.
 `;
-
     

@@ -8,10 +8,7 @@ import { english } from './english';
 import { physics } from './physics';
 import { chemistry } from './chemistry';
 import { biology } from './biology';
-import { philosophy } from './philosophy';
-import { politicalEconomy } from './political-economy';
-import { scientificSocialism } from './scientific-socialism';
-import { partyHistory } from './party-history';
+import { civics } from './civics';
 
 
 export const knowledgeBase = {
@@ -23,10 +20,10 @@ export const knowledgeBase = {
     history,
     geography,
     english,
-    philosophy,
-    'political-economy': politicalEconomy,
-    'scientific-socialism': scientificSocialism,
-    'party-history': partyHistory
+    philosophy: civics,
+    'political-economy': civics,
+    'scientific-socialism': civics,
+    'party-history': civics,
 };
 
     
