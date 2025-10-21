@@ -4,85 +4,72 @@ Kiến thức Tiếng Anh Trung học phổ thông (Chương trình chung)
 
 **A. Grammar (Ngữ pháp):**
 
-*   **Tenses (Thì):**
-    *   Review and mastery of all 12 basic tenses.
-    *   Focus on Perfect Tenses: Present/Past/Future Perfect, Present/Past/Future Perfect Continuous.
-    *   Sequence of Tenses (Sự phối hợp các thì).
+*   **Tenses (Các thì):**
+    *   Nắm vững và phân biệt 12 thì cơ bản.
+    *   **Focus on Perfect Tenses:** Present Perfect (diễn tả kinh nghiệm, hành động kéo dài từ QK đến HT), Past Perfect (hành động xảy ra trước một hành động khác trong QK), Future Perfect.
+    *   **Sequence of Tenses (Sự phối hợp các thì):** Đặc biệt trong mệnh đề phụ thuộc (mệnh đề quan hệ, mệnh đề thời gian).
 
 *   **Passive Voice (Thể bị động):**
-    *   With all tenses and modal verbs.
-    *   Special cases: Verbs of reporting (people say that...), causative form (have/get something done).
+    *   Bị động của tất cả các thì và động từ khuyết thiếu.
+    *   Các cấu trúc đặc biệt: Bị động với động từ tường thuật (people say that... → It is said that... / He is said to...), cấu trúc nhờ vả (have/get something done).
 
 *   **Reported Speech (Câu tường thuật):**
-    *   Statements, Questions (Yes/No, Wh-), Commands, Requests, Exclamations.
-    *   Reporting with gerunds (e.g., suggest V-ing) and to-infinitives (e.g., promise to V).
+    *   Tường thuật câu kể, câu hỏi (Yes/No, Wh-), câu mệnh lệnh.
+    *   Quy tắc lùi thì, thay đổi đại từ, trạng từ chỉ thời gian và nơi chốn.
+    *   Tường thuật với V-ing (suggest V-ing, admit V-ing...) và to-infinitive (promise to V, advise sb to V...).
 
 *   **Conditional Sentences (Câu điều kiện):**
     *   Type 0, 1, 2, 3.
-    *   Mixed Conditionals (Điều kiện hỗn hợp).
-    *   Inversion in conditional sentences (Đảo ngữ trong câu điều kiện).
+    *   Mixed Conditionals (Loại hỗn hợp, ví dụ: If + QKHT, S + would + V).
+    *   Inversion (Đảo ngữ) trong câu điều kiện: Should... / Were... / Had...
 
-*   **Wishes and 'If only' (Câu ước):**
-    *   Wish for present/future (S + wish + S + V-past).
-    *   Wish for past (S + wish + S + had + V3/ed).
+*   **Wishes (Câu ước):**
+    *   Ước cho tương lai: S + wish + S + would + V.
+    *   Ước cho hiện tại: S + wish + S + V2/ed.
+    *   Ước cho quá khứ: S + wish + S + had + V3/ed.
 
-*   **Clauses and Phrases (Mệnh đề và Cụm từ):**
+*   **Clauses (Mệnh đề):**
     *   **Relative Clauses (Mệnh đề quan hệ):**
-        *   Defining and Non-defining clauses.
-        *   With who, whom, which, that, whose, where, when, why.
-        *   Reduced relative clauses (using V-ing, V3/ed, to-infinitive).
-    *   **Adverbial Clauses:** Clauses of time, reason, concession (although, even though, despite, in spite of), purpose, result.
-    *   **Noun Clauses:** Clauses starting with 'that', 'wh-words'.
+        *   Mệnh đề xác định và không xác định (phân biệt bằng dấu phẩy).
+        *   Đại từ quan hệ: who, whom, which, that, whose. Trạng từ quan hệ: where, when, why.
+        *   Rút gọn mệnh đề quan hệ (dùng V-ing, V3/ed, to-infinitive).
+    *   **Adverbial Clauses (Mệnh đề trạng ngữ):** Chỉ thời gian, lí do, sự nhượng bộ (although, despite/in spite of), mục đích, kết quả.
+    *   **Noun Clauses (Mệnh đề danh từ):** Các mệnh đề bắt đầu bằng 'that', 'wh-words', 'if/whether'.
 
-*   **Modals and Phrasal Modals:** Can/could, may/might, must/have to, should, ought to, will/would, need. Modal verbs in the past (e.g., must have V3, should have V3).
+*   **Inversion (Đảo ngữ):**
+    *   Đảo ngữ với "Not only... but also", "No sooner... than", "Hardly... when".
+    *   Đảo ngữ với các trạng từ phủ định đứng đầu câu (Never, Rarely, Seldom, Little...).
 
-*   **Inversion (Đảo ngữ):** With 'Not only...but also', 'No sooner...than', 'Hardly...when', negative adverbs (Never, Rarely, Seldom...).
-
-*   **Gerunds and Infinitives:** Verbs followed by V-ing, to-V, or both. Prepositions followed by V-ing.
-
-*   **Articles (Mạo từ):** a/an, the, zero article (không dùng mạo từ).
-
-*   **Conjunctions and Connectors:** Coordinating (FANBOYS), subordinating, and correlative (both...and, either...or) conjunctions.
-
-*   **Phrasal Verbs (Cụm động từ) and Idioms (Thành ngữ):** Common phrasal verbs and idioms.
-
-*   **Comparisons:** Double comparison (The...the...), comparison of nouns and verbs.
+*   **Gerunds and Infinitives (Danh động từ và Động từ nguyên mẫu).**
+*   **Articles (Mạo từ):** a/an, the, và trường hợp không dùng mạo từ (zero article).
+*   **Phrasal Verbs (Cụm động từ) and Idioms (Thành ngữ):** Các cụm từ và thành ngữ thông dụng.
+*   **Comparisons (So sánh):** So sánh kép (The + comparative..., the + comparative...), so sánh hơn kém, so sánh bằng.
 
 **B. Vocabulary (Từ vựng theo chủ đề):**
 
-*   **Lớp 10:** Family life, Music, People and places, For a better community, Inventions, Gender equality, New ways to learn, Ecotourism.
+*   **Lớp 10:** Family life, Music, People and places, For a better community, Inventions, Gender equality, Ecotourism.
 *   **Lớp 11:** The generation gap, Relationships, Becoming independent, Caring for those in need, Global warming, The ASEAN region, Our world heritage sites.
 *   **Lớp 12:** Life stories, Urbanisation, The green movement, The mass media, Cultural identity, Endangered species, Artificial intelligence, The future of work.
 *   **Common Topics for University Entrance Exam:** Education, Environment, Technology, Health, Society, Culture, Economy, Science, Sports, Tourism.
 
 **C. Pronunciation (Phát âm):**
-*   Vowels and consonants in English.
-*   Stress in words with 2, 3, or more syllables.
-*   Stress in compound words.
-*   Sentence stress and intonation.
+*   Phân biệt các nguyên âm và phụ âm.
+*   Trọng âm từ (word stress) với từ 2, 3 âm tiết trở lên.
+*   Trọng âm câu (sentence stress) và ngữ điệu (intonation).
 
 **D. Skills (Kỹ năng):**
 
 *   **Reading:**
-    *   Skimming for general ideas and scanning for specific details.
-    *   Guessing vocabulary meaning in context.
-    *   Identifying main ideas, author's purpose, tone, and text structure.
-    *   Answering various question types: multiple-choice, gap-filling, true/false.
+    *   Kỹ năng Skimming (đọc lướt lấy ý chính) và Scanning (đọc quét tìm thông tin chi tiết).
+    *   Đoán nghĩa từ trong ngữ cảnh.
+    *   Xác định mục đích, thái độ của tác giả.
+    *   Trả lời các dạng câu hỏi đọc hiểu đa dạng.
 
 *   **Writing:**
-    *   Writing formal/informal letters and emails.
-    *   Writing essays (argumentative, cause-effect, problem-solution).
-    *   Describing charts, graphs, tables, and processes (for advanced level).
-    *   Sentence combination and transformation.
+    *   Viết thư/email trang trọng và thân mật.
+    *   Viết đoạn văn (paragraph) và bài luận (essay) khoảng 150-250 từ về các chủ đề xã hội.
+    *   Các dạng bài luận phổ biến: Argumentative (tranh luận), Cause-Effect (nguyên nhân-kết quả), Problem-Solution (vấn đề-giải pháp).
+    *   Kết hợp câu, viết lại câu.
 
-*   **Listening:**
-    *   Listening for general and specific information in longer talks, conversations, and news reports.
-    *   Note-taking while listening.
-    *   Identifying speaker's attitude or opinion.
-
-*   **Speaking:**
-    *   Discussing and debating on various social and academic topics.
-    *   Giving short presentations on a prepared topic.
-    *   Describing pictures, people, or events.
-    *   Role-playing in different situations.
+*   **Speaking:** Thảo luận, trình bày quan điểm về các chủ đề xã hội và học thuật.
 `;

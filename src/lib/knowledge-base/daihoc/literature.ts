@@ -2,50 +2,58 @@
 export const literature = `
 Kiến thức Ngữ văn cấp Đại học (Khoa Văn / Sư phạm Văn)
 
-Chương trình đại học đi sâu vào các lĩnh vực lý thuyết, lịch sử và phương pháp nghiên cứu văn học.
+Chương trình đại học ngành Ngữ văn cung cấp một hệ thống kiến thức toàn diện và chuyên sâu về Lý luận văn học, Lịch sử văn học, Phê bình văn học, cùng các ngành bổ trợ như Hán Nôm và Ngôn ngữ học.
 
 **1. Lý luận văn học:**
 *   **Bản chất và chức năng của văn học:**
-    *   Văn học là một hình thái ý thức xã hội đặc thù.
-    *   Hình tượng nghệ thuật, tính điển hình.
-    *   Chức năng nhận thức, giáo dục, thẩm mỹ của văn học.
+    *   Văn học là một hình thái ý thức xã hội đặc thù, phản ánh hiện thực thông qua hình tượng nghệ thuật.
+    *   **Hình tượng nghệ thuật:** Đặc trưng, tính điển hình trong mối quan hệ với cái cá biệt.
+    *   **Chức năng của văn học:** Nhận thức (khám phá đời sống), Giáo dục (hình thành nhân cách), Thẩm mỹ (mang lại khoái cảm, vẻ đẹp), Giao tiếp, Giải trí.
 *   **Quá trình văn học:**
-    *   Trào lưu, trường phái, phương pháp sáng tác (chủ nghĩa cổ điển, lãng mạn, hiện thực...).
-    *   Phong cách nhà văn.
+    *   Là sự vận động, phát triển của văn học trong thời gian.
+    *   Các khái niệm: **Trào lưu văn học** (VD: Trào lưu lãng mạn, hiện thực), **trường phái**, **phương pháp sáng tác** (chủ nghĩa cổ điển, lãng mạn, hiện thực, siêu thực...).
+    *   **Phong cách nhà văn:** Nét độc đáo, riêng biệt của tác giả trong sáng tác.
 *   **Tác phẩm văn học:**
-    *   Cấu trúc tác phẩm: Cốt truyện, nhân vật, không gian, thời gian nghệ thuật.
-    *   Ngôn ngữ văn học, các biện pháp tu từ.
+    *   **Cấu trúc tác phẩm:**
+        *   Cốt truyện, nhân vật (hệ thống nhân vật, tính cách, nội tâm).
+        *   Không gian nghệ thuật, thời gian nghệ thuật.
+        *   Lời văn nghệ thuật, ngôn ngữ người kể chuyện, ngôn ngữ nhân vật.
+    *   **Ngôn ngữ văn học:** Tính hình tượng, tính biểu cảm, tính đa nghĩa. Các biện pháp tu từ từ vựng và cú pháp.
 *   **Loại thể văn học:**
-    *   Tự sự (sử thi, truyện ngắn, tiểu thuyết).
-    *   Trữ tình (thơ).
-    *   Kịch (bi kịch, hài kịch).
+    *   **Tự sự (Epic):** Sử thi, truyện ngắn, tiểu thuyết. Đặc trưng: có người kể chuyện, cốt truyện, nhân vật.
+    *   **Trữ tình (Lyric):** Thơ các loại. Đặc trưng: bộc lộ trực tiếp cảm xúc, suy tư của nhân vật trữ tình.
+    *   **Kịch (Dramatic):** Bi kịch, hài kịch, chính kịch. Đặc trưng: không có người kể chuyện, tái hiện xung đột qua hành động và lời thoại nhân vật.
+    *   Các thể loại trung gian: Ký, thơ văn xuôi...
 
 **2. Lịch sử văn học Việt Nam:**
 *   **Văn học dân gian:**
-    *   Đặc trưng của văn học dân gian.
-    *   Hệ thống thể loại: thần thoại, sử thi, truyền thuyết, cổ tích, ngụ ngôn, truyện cười, tục ngữ, ca dao, vè...
+    *   Đặc trưng: Tính truyền miệng, tính tập thể, tính dị bản.
+    *   Hệ thống thể loại: Thần thoại, sử thi (Đăm Săn), truyền thuyết, cổ tích (Tấm Cám), ngụ ngôn, truyện cười, tục ngữ, ca dao, vè...
 *   **Văn học trung đại (Thế kỷ X - hết XIX):**
-    *   Văn học chữ Hán và văn học chữ Nôm.
-    *   Các giai đoạn phát triển chính: Lý-Trần, Lê-Mạc, Lê Trung Hưng, Nguyễn.
-    *   Các tác gia lớn: Nguyễn Trãi, Nguyễn Du, Hồ Xuân Hương, Nguyễn Đình Chiểu...
-    *   Các trào lưu chính như chủ nghĩa yêu nước, chủ nghĩa nhân đạo.
+    *   Hai thành phần: Văn học chữ Hán và văn học chữ Nôm.
+    *   Các giai đoạn chính: Lý-Trần, Lê-Mạc, Lê Trung Hưng, Nguyễn.
+    *   Các nội dung lớn: Chủ nghĩa yêu nước, chủ nghĩa nhân đạo, cảm hứng thế sự.
+    *   Tác gia lớn: Nguyễn Trãi, Nguyễn Du, Hồ Xuân Hương, Nguyễn Đình Chiểu...
 *   **Văn học hiện đại (Đầu thế kỷ XX - nay):**
-    *   Giai đoạn 1900-1945: Quá trình hiện đại hóa văn học. Các trào lưu văn học lãng mạn, hiện thực phê phán. Các tác gia tiêu biểu: Tản Đà, Thạch Lam, Nam Cao, Nguyễn Tuân, Xuân Diệu, Huy Cận...
-    *   Giai đoạn 1945-1975: Văn học phục vụ kháng chiến. Khuynh hướng sử thi và cảm hứng lãng mạn.
-    *   Giai đoạn sau 1975: Văn học thời kỳ Đổi mới, những tìm tòi, cách tân về nội dung và nghệ thuật.
+    *   **Giai đoạn 1900-1945:** Quá trình hiện đại hóa văn học.
+        *   Văn học lãng mạn 1930-1945 (Thơ mới, Tự lực văn đoàn).
+        *   Văn học hiện thực phê phán 1930-1945 (Nam Cao, Vũ Trọng Phụng, Ngô Tất Tố).
+        *   Tác gia tiêu biểu: Tản Đà, Thạch Lam, Nguyễn Tuân, Xuân Diệu, Huy Cận, Hàn Mặc Tử...
+    *   **Giai đoạn 1945-1975:** Văn học phục vụ kháng chiến và xây dựng chủ nghĩa xã hội. Khuynh hướng sử thi và cảm hứng lãng mạn là chủ đạo.
+    *   **Giai đoạn sau 1975 (Văn học thời kỳ Đổi mới):** Cảm hứng đời tư - thế sự, những tìm tòi, cách tân về nội dung và nghệ thuật, nhìn nhận con người đa chiều, phức tạp hơn.
 
 **3. Lịch sử văn học thế giới:**
-*   Văn học Hy Lạp - La Mã cổ đại.
-*   Văn học Tây Âu trung đại, Phục Hưng.
-*   Văn học Pháp, Nga, Anh, Mỹ, Trung Quốc... qua các thời kỳ và tác gia tiêu biểu.
+*   Văn học Hy Lạp - La Mã cổ đại (Homere, Sophocles...).
+*   Văn học Tây Âu trung đại, Phục Hưng (Dante, Shakespeare...).
+*   Văn học Pháp (Victor Hugo, Balzac...), Nga (Pushkin, Tolstoy, Dostoevsky...), Anh, Mỹ, Trung Quốc... qua các thời kỳ và tác gia tiêu biểu.
 
 **4. Phê bình văn học:**
 *   Lịch sử phê bình văn học.
-*   Các phương pháp phê bình hiện đại: Phê bình thi pháp học, phê bình cấu trúc, phê bình phân tâm học, phê bình xã hội học...
+*   Các phương pháp phê bình hiện đại: Phê bình thi pháp học (formalism), phê bình cấu trúc, phê bình xã hội học, phê bình phân tâm học, phê bình nữ quyền, phê bình hậu thực dân...
 
 **5. Hán Nôm:**
-*   Học chữ Hán, chữ Nôm để đọc hiểu các văn bản gốc của văn học trung đại.
+*   Học chữ Hán, chữ Nôm để đọc hiểu, phiên âm, dịch nghĩa các văn bản gốc của văn học trung đại và các văn bia, tài liệu lịch sử.
 
 **6. Ngôn ngữ học:**
-*   Ngữ âm, từ vựng, ngữ pháp, ngữ nghĩa, ngữ dụng học tiếng Việt.
+*   Các phân ngành: Ngữ âm học, Từ vựng học, Ngữ pháp học, Ngữ nghĩa học, Ngữ dụng học tiếng Việt.
 `;

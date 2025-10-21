@@ -2,73 +2,81 @@
 export const chemistry11 = `
 Kiến thức Hóa học Lớp 11
 
+**A. VÔ CƠ**
+
 **Chương 1: Sự điện li**
-*   Khái niệm axit, bazơ, muối theo thuyết A-rê-ni-ut.
-*   Sự điện li, chất điện li mạnh, chất điện li yếu. Cân bằng điện li.
-*   Tích số ion của nước. pH. Chất chỉ thị axit-bazơ.
-*   Phản ứng trao đổi ion trong dung dịch chất điện li: Điều kiện xảy ra.
-*   Phương trình ion và ion rút gọn.
+*   **Sự điện li:** Quá trình phân li các chất trong nước ra ion.
+*   **Chất điện li mạnh, yếu:**
+    + Mạnh: Axit mạnh, bazơ mạnh, hầu hết các muối. Phân li hoàn toàn.
+    + Yếu: Axit yếu, bazơ yếu. Phân li một phần (thuận nghịch).
+*   **Axit, bazơ, muối theo thuyết A-rê-ni-ut.**
+*   **Tích số ion của nước. pH. Chất chỉ thị axit-bazơ.** $K_w = [H^+][OH^-] = 10^{-14}$. $pH = -\\log[H^+]$.
+*   **Phản ứng trao đổi ion trong dung dịch:** Điều kiện xảy ra (tạo kết tủa, chất bay hơi, hoặc chất điện li yếu).
+*   **Phương trình ion rút gọn.**
 
 **Chương 2: Nhóm Nitơ - Photpho (Nhóm VA)**
-*   Nitơ (N2): Cấu tạo phân tử, tính chất vật lí. Tính chất hóa học (vừa oxi hóa, vừa khử). Trạng thái tự nhiên, ứng dụng.
-*   Amoniac (NH3): Cấu tạo, tính chất vật lí. Tính bazơ yếu. Tính khử. Ứng dụng, điều chế.
-*   Muối amoni: Tính chất, nhận biết ion amoni.
-*   Axit nitric (HNO3): Cấu tạo, tính chất vật lí. Tính axit mạnh. Tính oxi hóa mạnh (tác dụng với kim loại, phi kim, hợp chất). Ứng dụng, điều chế.
-*   Muối nitrat: Tính chất, nhận biết ion nitrat. Chu trình nitơ.
-*   Photpho (P): Các dạng thù hình, tính chất.
-*   Axit photphoric (H3PO4): Cấu tạo, tính axit ba nấc. Điều chế.
-*   Muối photphat: Nhận biết ion photphat.
-*   Phân bón: Phân đạm, lân, kali. Phân NPK.
+*   **Nitơ (N₂):**
+    + Cấu tạo phân tử (liên kết ba bền vững), khá trơ ở nhiệt độ thường.
+    + Tính chất hóa học: Vừa có tính oxi hóa (tác dụng với kim loại, H₂) vừa có tính khử (tác dụng với O₂).
+*   **Amoniac (NH₃):**
+    + Tính bazơ yếu: Tác dụng với nước, axit, dung dịch muối.
+    + Tính khử: Tác dụng với O₂, Cl₂, một số oxit kim loại.
+*   **Axit nitric (HNO₃):**
+    + Tính axit mạnh.
+    + Tính oxi hóa rất mạnh: Oxi hóa hầu hết kim loại (trừ Au, Pt), nhiều phi kim và hợp chất. Sản phẩm khử của $N^{+5}$ có thể là $NO_2, NO, N_2O, N_2, NH_4NO_3$ tùy thuộc vào độ mạnh chất khử và nồng độ axit.
+*   **Muối nitrat:** Dễ bị nhiệt phân.
+*   **Photpho (P):** Các dạng thù hình (P trắng, P đỏ).
+*   **Axit photphoric (H₃PO₄):** Axit trung bình, 3 nấc.
+*   **Muối photphat:** Nhận biết ion $PO_4^{3-}$.
+*   **Phân bón:** Phân đạm (cung cấp N), lân (cung cấp P), kali (cung cấp K). Độ dinh dưỡng.
 
 **Chương 3: Nhóm Cacbon - Silic (Nhóm IVA)**
-*   Cacbon (C): Các dạng thù hình (kim cương, than chì, fuleren). Tính chất (vừa oxi hóa, vừa khử).
-*   Hợp chất của Cacbon:
-    *   Cacbon monoxit (CO): Tính khử mạnh, độc tính.
-    *   Cacbon đioxit (CO2): Tính chất của oxit axit.
-    *   Axit cacbonic (H2CO3) và muối cacbonat (tính tan, nhiệt phân).
-*   Silic (Si) và hợp chất của Silic:
-    *   Silic: Tính chất.
-    *   Silic đioxit (SiO2).
-    *   Axit silixic (H2SiO3) và muối silicat.
-*   Công nghiệp silicat: Sản xuất thủy tinh, đồ gốm, xi măng.
+*   **Cacbon (C):** Các dạng thù hình. Tính chất: Vừa có tính oxi hóa, vừa có tính khử.
+*   **Hợp chất của Cacbon:**
+    *   **CO:** Oxit không tạo muối, tính khử mạnh (khử oxit kim loại sau Al). Rất độc.
+    *   **CO₂:** Oxit axit. Tác dụng với dung dịch kiềm tạo muối trung hòa hoặc muối axit.
+    *   **Axit cacbonic ($H_2CO_3$):** Axit rất yếu.
+    *   **Muối cacbonat:** Tính tan, phản ứng nhiệt phân.
+*   **Silic (Si):** Tính chất tương tự Cacbon.
+*   **Silic đioxit ($SiO_2$):** Tính chất của oxit axit (tác dụng với kiềm đặc).
+*   **Công nghiệp silicat:** Sản xuất thủy tinh, đồ gốm, xi măng.
+
+**B. HỮU CƠ**
 
 **Chương 4: Đại cương về hóa học hữu cơ**
-*   Khái niệm hợp chất hữu cơ và hóa học hữu cơ. Phân loại.
-*   Đặc điểm chung của hợp chất hữu cơ.
-*   Phân tích nguyên tố: Định tính và định lượng.
-*   Công thức phân tử, công thức đơn giản nhất.
-*   Thuyết cấu tạo hóa học: Nội dung, đồng đẳng, đồng phân.
-*   Phản ứng hữu cơ: Phân loại (thế, cộng, tách).
+*   **Hóa học hữu cơ và hợp chất hữu cơ.** Phân loại hiđrocacbon và dẫn xuất.
+*   **Phân tích nguyên tố.** Công thức đơn giản nhất, công thức phân tử.
+*   **Thuyết cấu tạo hóa học:** Các luận điểm chính. Đồng đẳng, đồng phân (cấu tạo, hình học).
 
 **Chương 5: Hiđrocacbon no**
-*   Ankan: Dãy đồng đẳng, danh pháp, cấu trúc không gian.
-*   Tính chất hóa học đặc trưng của ankan: Phản ứng thế halogen, phản ứng tách (cracking), phản ứng oxi hóa.
-*   Xicloankan.
+*   **Ankan:** Dãy đồng đẳng, danh pháp.
+*   Tính chất hóa học: Phản ứng thế halogen (theo cơ chế gốc - xích), phản ứng tách (cracking, dehydro hóa), phản ứng oxi hóa.
+*   **Xicloankan.**
 
 **Chương 6: Hiđrocacbon không no**
-*   Anken: Dãy đồng đẳng, đồng phân (cấu tạo, hình học), danh pháp.
-*   Tính chất hóa học của anken: Phản ứng cộng (H2, halogen, HX), quy tắc Mac-côp-nhi-côp, phản ứng trùng hợp, phản ứng oxi hóa.
-*   Ankađien: Buta-1,3-đien, Isopren.
-*   Ankin: Axetilen (C2H2). Tính chất hóa học: phản ứng cộng, phản ứng thế với AgNO3/NH3.
+*   **Anken:** Cấu tạo (có 1 liên kết đôi $C=C$). Đồng phân, danh pháp.
+*   Tính chất hóa học: Phản ứng cộng (H₂, halogen, HX - quy tắc Mac-côp-nhi-côp), phản ứng trùng hợp, phản ứng oxi hóa (làm mất màu dung dịch $KMnO_4$).
+*   **Ankađien:** Liên hợp (buta-1,3-đien, isopren).
+*   **Ankin:** Cấu tạo (có 1 liên kết ba $C \\equiv C$).
+*   Tính chất hóa học: Phản ứng cộng. Phản ứng thế của ank-1-in với ion kim loại ($Ag^+$).
 
-**Chương 7: Hiđrocacbon thơm. Nguồn hiđrocacbon thiên nhiên**
-*   Benzen (C6H6) và đồng đẳng: Cấu trúc, đặc điểm.
-*   Tính chất hóa học: Phản ứng thế (halogen, nitro hóa), phản ứng cộng.
-*   Stiren.
-*   Nguồn hiđrocacbon thiên nhiên: Dầu mỏ, khí thiên nhiên, than đá.
+**Chương 7: Hiđrocacbon thơm**
+*   **Benzen (C₆H₆) và đồng đẳng:** Cấu trúc vòng thơm.
+*   Tính chất hóa học: Dễ tham gia phản ứng thế (halogen, nitro hóa), khó tham gia phản ứng cộng.
 
 **Chương 8: Dẫn xuất Halogen - Ancol - Phenol**
-*   Dẫn xuất Halogen.
-*   Ancol: Định nghĩa, phân loại, danh pháp.
-*   Tính chất hóa học: Phản ứng thế H ở nhóm -OH, thế cả nhóm -OH, tách nước tạo anken/ete, oxi hóa.
-*   Etanol (Rượu etylic).
-*   Phenol: Cấu tạo, ảnh hưởng qua lại trong phân tử.
-*   Tính chất hóa học: Tính axit yếu, phản ứng thế ở vòng thơm.
+*   **Dẫn xuất Halogen:** Phản ứng thế nguyên tử halogen bằng nhóm -OH.
+*   **Ancol:** Định nghĩa, phân loại.
+*   Tính chất hóa học: Phản ứng thế H của nhóm -OH, thế cả nhóm -OH, tách nước tạo anken/ete, oxi hóa ancol bậc I, bậc II.
+*   **Phenol ($C_6H_5OH$):**
+    + Ảnh hưởng qua lại giữa nhóm -OH và vòng benzen.
+    + Tính chất: Tính axit yếu (tác dụng với NaOH), phản ứng thế ở vòng thơm (tạo kết tủa trắng với $Br_2$).
 
 **Chương 9: Anđehit - Xeton - Axit cacboxylic**
-*   Anđehit - Xeton: Cấu tạo, danh pháp.
-*   Tính chất hóa học của anđehit: Phản ứng cộng H2, phản ứng tráng bạc (với AgNO3/NH3), phản ứng với Cu(OH)2.
-*   Axit cacboxylic: Cấu tạo, danh pháp.
-*   Tính chất hóa học: Tính axit, phản ứng este hóa.
-*   Axit axetic.
+*   **Anđehit:**
+    + Cấu tạo nhóm chức -CHO.
+    + Tính chất hóa học: Phản ứng cộng H₂, phản ứng oxi hóa không hoàn toàn (phản ứng tráng bạc, phản ứng với $Cu(OH)_2/OH^-$).
+*   **Axit cacboxylic:**
+    + Cấu tạo nhóm chức -COOH.
+    + Tính chất hóa học: Tính axit (mạnh hơn phenol), phản ứng este hóa với ancol.
 `;
