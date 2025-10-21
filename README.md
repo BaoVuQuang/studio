@@ -73,6 +73,8 @@ Frontend chạy tại [http://localhost:9002](http://localhost:9002).
   node scripts/enrich-knowledge.mjs
   ```
   Lệnh đầu tiên sinh tệp thô, lệnh thứ hai bổ sung "Hướng dẫn tự học" và "Lộ trình luyện đề" tránh trùng lặp.
+- Mỗi tệp JSON sau khi enrich có thêm trường `sections` giúp frontend tải từng phần nội dung
+  (kiến thức trọng tâm, tự học, lộ trình) mà không cần parse lại chuỗi markdown.
 
 Hoàn thành các bước trên, bạn có thể mở trình duyệt và bắt đầu tương tác với StudyBuddy ngay trên máy cục bộ của mình.
 

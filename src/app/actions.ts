@@ -3,7 +3,8 @@
 import { providePersonalizedTutoring, type ProvidePersonalizedTutoringInput } from '@/ai/flows/provide-personalized-tutoring';
 import { suggestQuestions } from '@/ai/flows/suggest-questions';
 import { generateQuiz } from '@/ai/flows/generate-quiz';
-import { getKnowledgeBase } from '@/lib/knowledge-base';
+import { getKnowledgeBase, getKnowledgeSections } from '@/lib/knowledge-base';
+import type { KnowledgeSection } from '@/lib/knowledge-base';
 import type { EducationLevel, QuizData } from '@/lib/types';
 import { classifyError, logStructured, runWithResilience, CircuitOpenError } from '@/lib/server-resilience';
 
@@ -153,5 +154,36 @@ function mapClassificationToMessage(type: ReturnType<typeof classifyError>['type
       return 'Yêu cầu chưa hợp lệ. Vui lòng kiểm tra lại nội dung và thử lại.';
     default:
       return fallback;
+  }
+}
+
+/**
+ * Fetches the structured knowledge sections so the client can render them without parsing markdown manually.
+ */
+export async function getKnowledgeSectionsOverview(
+  level: EducationLevel,
+  subject: string,
+  grade?: string
+): Promise<{ success: boolean; sections?: KnowledgeSection[]; error?: string }> {
+  try {
+    const sections = await getKnowledgeSections(level, subject, grade);
+    if (!sections || sections.length === 0) {
+      logStructured('warn', 'Knowledge sections unavailable', { level, subject, grade: grade ?? null });
+      return { success: true, sections: [] };
+    }
+
+    return { success: true, sections };
+  } catch (error) {
+    const classification = classifyError(error);
+    logStructured('error', 'Knowledge sections retrieval failed', {
+      level,
+      subject,
+      grade: grade ?? null,
+      classification: classification.type,
+    });
+    return {
+      success: false,
+      error: 'Không thể tải nội dung kiến thức nền cho môn học này.',
+    };
   }
 }

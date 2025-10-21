@@ -24,6 +24,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { Progress } from '@/components/ui/progress';
 
 import type { Message, Subject } from '@/lib/types';
+import type { KnowledgeSection } from '@/lib/knowledge-base';
 import { cn } from '@/lib/utils';
 
 
@@ -39,6 +40,8 @@ interface ChatViewProps {
   isUploading: boolean;
   uploadProgress: number | null;
   onClearDocument: () => void;
+  knowledgeSections: KnowledgeSection[] | null;
+  isKnowledgeLoading: boolean;
 }
 
 type ExtendedMarkdownComponents = Components & {
@@ -67,6 +70,8 @@ export default function ChatView({
   isUploading,
   uploadProgress,
   onClearDocument,
+  knowledgeSections,
+  isKnowledgeLoading,
 }: ChatViewProps) {
   const [question, setQuestion] = useState('');
   const scrollAreaRef = useRef<HTMLDivElement>(null);
@@ -108,6 +113,7 @@ export default function ChatView({
     return '';
   }, [messages]);
 
+  const shouldShowKnowledgeSections = !documentName && Array.isArray(knowledgeSections) && knowledgeSections.length > 0;
 
   return (
     <Card className="flex flex-col h-full border rounded-lg">
@@ -136,8 +142,28 @@ export default function ChatView({
       <CardContent className="flex-1 overflow-hidden p-0">
         {messages.length === 0 && !isLoading ? (
           <div className="flex h-full items-center justify-center p-4">
-             <div className="text-center text-sm text-muted-foreground">
+            <div className="text-center text-sm text-muted-foreground space-y-4 max-w-xl">
               <p>Bắt đầu cuộc trò chuyện bằng cách đặt câu hỏi về "{selectedSubject.label}" ở bên dưới.</p>
+              {isKnowledgeLoading && (
+                <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
+                  <LoaderCircle className="h-3 w-3 animate-spin" />
+                  Đang tải các ghi chú trọng tâm cho môn học này...
+                </div>
+              )}
+              {shouldShowKnowledgeSections && (
+                <div className="text-left space-y-4">
+                  {knowledgeSections?.map(section => (
+                    <div key={section.id} className="rounded-md border bg-muted/40 p-4">
+                      <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2">
+                        {section.title}
+                      </h3>
+                      <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
+                        {section.body}
+                      </ReactMarkdown>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         ) : (

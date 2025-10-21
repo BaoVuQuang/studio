@@ -23,7 +23,8 @@ import {
   LoaderCircle,
 } from 'lucide-react';
 import type { EducationLevel, Grade, Subject, QuizData, Message } from '@/lib/types';
-import { getQuiz, getTutorResponse, getQuestionSuggestions } from '@/app/actions';
+import type { KnowledgeSection } from '@/lib/knowledge-base';
+import { getQuiz, getTutorResponse, getQuestionSuggestions, getKnowledgeSectionsOverview } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
@@ -120,6 +121,8 @@ export default function StudyBuddyClient() {
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState<number | null>(null);
   const [savedProgress, setSavedProgress] = useState<StoredProgress | null>(null);
+  const [knowledgeSections, setKnowledgeSections] = useState<KnowledgeSection[] | null>(null);
+  const [isKnowledgeLoading, setKnowledgeLoading] = useState(false);
 
   const [quizData, setQuizData] = useState<QuizData | null>(null);
   const [isQuizLoading, setQuizLoading] = useState(false);
@@ -221,6 +224,34 @@ export default function StudyBuddyClient() {
     return [];
   }, [selectedLevel, selectedGrade]);
 
+  const loadKnowledgeSections = useCallback(
+    async (level: EducationLevel, subjectValue: string, gradeValue: string | null) => {
+      // Retrieve structured knowledge sections so the chat view can present core tips before any messages are sent.
+      setKnowledgeLoading(true);
+      try {
+        const response = await getKnowledgeSectionsOverview(level, subjectValue, gradeValue ?? undefined);
+        if (response.success) {
+          setKnowledgeSections(response.sections ?? []);
+        } else {
+          setKnowledgeSections([]);
+          if (response.error) {
+            toast({ variant: 'destructive', title: 'Không thể tải kiến thức nền', description: response.error });
+          }
+        }
+      } catch (error) {
+        setKnowledgeSections([]);
+        toast({
+          variant: 'destructive',
+          title: 'Không thể tải kiến thức nền',
+          description: 'Đã xảy ra lỗi khi tải nội dung kiến thức nền. Hãy thử lại sau.',
+        });
+      } finally {
+        setKnowledgeLoading(false);
+      }
+    },
+    [toast]
+  );
+
   const currentSubjectDetails = useMemo(() => {
     if (!selectedLevel || !selectedSubject) return null;
     return subjectMap[selectedLevel].find(s => s.value === selectedSubject) || null;
@@ -230,6 +261,9 @@ export default function StudyBuddyClient() {
     setSelectedLevel(level);
     setSelectedGrade(null);
     setSelectedSubject(null);
+    // Clearing cached sections prevents the previous subject preview from leaking into a new selection flow.
+    setKnowledgeSections(null);
+    setKnowledgeLoading(false);
     if (gradesByLevel[level].length === 0) { // Skip grade selection for University
       setStep('subject');
     } else {
@@ -240,12 +274,19 @@ export default function StudyBuddyClient() {
   const handleGradeSelect = (grade: string) => {
     setSelectedGrade(grade);
     setSelectedSubject(null);
+    // Reset knowledge sections whenever the learner changes class to avoid mixing grade-specific tips.
+    setKnowledgeSections(null);
     setStep('subject');
   };
 
   const handleSubjectSelect = (subject: string) => {
     setSelectedSubject(subject);
+    // Clear and refetch sections so the mode screen shows the correct subject insights.
+    setKnowledgeSections(null);
     setStep('mode');
+    if (selectedLevel) {
+      void loadKnowledgeSections(selectedLevel, subject, selectedGrade);
+    }
   };
 
   const handleModeSelect = async (mode: 'chat' | 'quiz') => {
@@ -292,6 +333,8 @@ export default function StudyBuddyClient() {
         }
         break;
       case 'mode':
+        // Wipe the subject preview so the learner picks a new topic cleanly.
+        setKnowledgeSections(null);
         setStep('subject');
         break;
       case 'subject':
@@ -340,12 +383,24 @@ export default function StudyBuddyClient() {
     }
 
     setSelectedSubject(savedProgress.selectedSubject);
+    // Reload sections for the restored subject so the chat can display the updated breakdown immediately.
+    if (savedProgress.selectedLevel && savedProgress.selectedSubject) {
+      void loadKnowledgeSections(
+        savedProgress.selectedLevel,
+        savedProgress.selectedSubject,
+        savedProgress.selectedGrade ?? null
+      );
+    } else {
+      setKnowledgeSections(null);
+    }
 
     setDocumentName(savedProgress.documentName ?? null);
 
     if (savedProgress.documentHadContent) {
       setDocumentContent(null);
       setDocumentRequiresReload(true);
+      // Hide cached sections because the conversation depends on a custom document that must be uploaded again.
+      setKnowledgeSections(null);
       toast({
         variant: 'destructive',
         title: 'Cần tải lại tài liệu',
@@ -359,7 +414,7 @@ export default function StudyBuddyClient() {
     setChatMessages(savedProgress.chatMessages || []);
     setStep(savedProgress.step || 'chat');
     setSavedProgress(null);
-  }, [savedProgress, toast]);
+  }, [savedProgress, toast, loadKnowledgeSections]);
 
   const handleFileChange = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     // Harden document ingestion by validating and streaming uploads to the FastAPI backend while resetting any reload warnings.
@@ -446,6 +501,8 @@ export default function StudyBuddyClient() {
       setDocumentContent(payload.content);
       setDocumentName(payload.name);
       setDocumentRequiresReload(false);
+      // Skip default knowledge previews when a custom document becomes the primary context.
+      setKnowledgeSections(null);
       setChatMessages([]);
       setStep('chat');
       toast({
@@ -466,6 +523,11 @@ export default function StudyBuddyClient() {
     setDocumentContent(null);
     setDocumentName(null);
     setDocumentRequiresReload(false);
+    if (selectedLevel && selectedSubject) {
+      // Restore the structured sections for the underlying subject once the document is removed.
+      setKnowledgeSections(null);
+      void loadKnowledgeSections(selectedLevel, selectedSubject, selectedGrade);
+    }
     toast({
       title: "Đã bỏ tài liệu",
       description: "Cuộc trò chuyện đã quay lại chế độ bình thường.",
@@ -684,6 +746,8 @@ export default function StudyBuddyClient() {
                   isUploading={isUploading}
                   uploadProgress={uploadProgress}
                   onClearDocument={handleClearDocument}
+                  knowledgeSections={knowledgeSections}
+                  isKnowledgeLoading={isKnowledgeLoading}
                 />
               )}
             </div>

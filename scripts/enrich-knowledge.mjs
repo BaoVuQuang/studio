@@ -71,7 +71,7 @@ const DATA_ROOT = path.join(process.cwd(), 'data', 'chroma');
 
 /**
  * Updates a single knowledge JSON file by appending modern self-study guidance and practice roadmaps.
- * The enrichment remains idempotent thanks to heading guards before mutating the JSON content.
+ * The enrichment also materialises a sections array so the frontend can display each portion independently.
  */
 async function enrichFile(filePath) {
   // Adds modern study guidance and practice roadmaps to each JSON file without duplicating sections.
@@ -82,23 +82,54 @@ async function enrichFile(filePath) {
   const supplement = SUBJECT_SUPPLEMENTS[subjectKey];
   const roadmap = PRACTICE_ROADMAPS[subjectKey];
 
-  if (typeof data.content !== 'string') {
-    return;
+  const sections = Array.isArray(data.sections) ? data.sections : [];
+  const normalizedSections = sections.map(section => ({
+    id: typeof section.id === 'string' ? section.id : 'core',
+    title: typeof section.title === 'string' ? section.title : 'Kiến thức trọng tâm',
+    body: typeof section.body === 'string' ? section.body : '',
+  }));
+
+  if (normalizedSections.length === 0 && typeof data.content === 'string') {
+    normalizedSections.push({ id: 'core', title: 'Kiến thức trọng tâm', body: data.content });
   }
 
   let updated = false;
 
-  if (supplement && !data.content.includes('### Hướng dẫn tự học cập nhật')) {
-    data.content = `${data.content.trim()}\n\n### Hướng dẫn tự học cập nhật\n${supplement}\n`;
+  if (supplement && !normalizedSections.some(section => section.id === 'self-study-updated')) {
+    normalizedSections.push({
+      id: 'self-study-updated',
+      title: 'Hướng dẫn tự học cập nhật',
+      body: supplement,
+    });
     updated = true;
   }
 
-  if (roadmap && !data.content.includes('### Lộ trình luyện đề 2025')) {
-    data.content = `${data.content.trim()}\n\n### Lộ trình luyện đề 2025\n${roadmap}\n`;
+  if (roadmap && !normalizedSections.some(section => section.id === 'practice-roadmap-2025')) {
+    normalizedSections.push({
+      id: 'practice-roadmap-2025',
+      title: 'Lộ trình luyện đề 2025',
+      body: roadmap,
+    });
     updated = true;
   }
 
-  if (updated) {
+  const aggregatedContent = normalizedSections
+    .map(section => `### ${section.title}\n${section.body}`)
+    .join('\n\n')
+    .trim();
+
+  const existingContent = typeof data.content === 'string' ? data.content.trim() : '';
+  const sectionsChanged =
+    !Array.isArray(data.sections) ||
+    data.sections.length !== normalizedSections.length ||
+    normalizedSections.some((section, index) => {
+      const current = data.sections?.[index];
+      return !current || current.id !== section.id || current.title !== section.title || current.body !== section.body;
+    });
+
+  if (sectionsChanged || updated || aggregatedContent !== existingContent) {
+    data.sections = normalizedSections;
+    data.content = aggregatedContent;
     await fs.writeFile(filePath, `${JSON.stringify(data, null, 2)}\n`, 'utf8');
   }
 }
