@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { Bot, LoaderCircle, Send, Lightbulb, User, Paperclip, X, Info } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
+import type { Components } from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
 import { BlockMath, InlineMath } from 'react-katex';
@@ -20,6 +21,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Textarea } from '@/components/ui/textarea';
 import { Separator } from '@/components/ui/separator';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Progress } from '@/components/ui/progress';
 
 import type { Message, Subject } from '@/lib/types';
 import { cn } from '@/lib/utils';
@@ -30,20 +32,40 @@ interface ChatViewProps {
   isLoading: boolean;
   selectedSubject: Subject;
   documentName: string | null;
+  documentRequiresReload: boolean;
   onSubmit: (question: string) => Promise<void>;
   onSuggestQuestions: (messageId: string, question: string) => Promise<void>;
   onFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  isUploading: boolean;
+  uploadProgress: number | null;
   onClearDocument: () => void;
 }
+
+type ExtendedMarkdownComponents = Components & {
+  math?: (props: { value?: string }) => JSX.Element;
+  inlineMath?: (props: { value?: string }) => JSX.Element;
+};
+
+const markdownComponents: ExtendedMarkdownComponents = {
+  // Keep text spacing consistent while letting remark-math inject KaTeX nodes safely.
+  p: ({ node, ...props }) => <p className="mb-2 last:mb-0" {...props} />,
+  ol: ({ node, ...props }) => <ol className="list-decimal list-inside" {...props} />,
+  ul: ({ node, ...props }) => <ul className="list-disc list-inside" {...props} />,
+  math: ({ value }) => <BlockMath math={value ?? ''} />,
+  inlineMath: ({ value }) => <InlineMath math={value ?? ''} />,
+};
 
 export default function ChatView({
   messages,
   isLoading,
   selectedSubject,
   documentName,
+  documentRequiresReload,
   onSubmit,
   onSuggestQuestions,
   onFileChange,
+  isUploading,
+  uploadProgress,
   onClearDocument,
 }: ChatViewProps) {
   const [question, setQuestion] = useState('');
@@ -60,11 +82,13 @@ export default function ChatView({
   }, [messages]);
 
   const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    // Block submissions while uploads are running or the document context needs to be reloaded for safety.
     e.preventDefault();
-    if (question.trim()) {
-      onSubmit(question);
-      setQuestion('');
+    if (isUploading || documentRequiresReload || !question.trim()) {
+      return;
     }
+    onSubmit(question);
+    setQuestion('');
   };
   
   const handleSuggestionClick = (suggestedQuestion: string) => {
@@ -142,16 +166,10 @@ export default function ChatView({
                         : 'bg-card border'
                     )}
                   >
-                     <ReactMarkdown 
+                    <ReactMarkdown
                       remarkPlugins={[remarkGfm, remarkMath]}
-                      components={{
-                        p: ({node, ...props}) => <p className="mb-2 last:mb-0" {...props} />,
-                        ol: ({node, ...props}) => <ol className="list-decimal list-inside" {...props} />,
-ul: ({node, ...props}) => <ul className="list-disc list-inside" {...props} />,
-                        math: ({value}) => <BlockMath math={value} />,
-                        inlineMath: ({value}) => <InlineMath math={value} />,
-                      }}
-                     >
+                      components={markdownComponents}
+                    >
                         {message.content}
                     </ReactMarkdown>
                     {message.role === 'assistant' && (
@@ -225,6 +243,15 @@ ul: ({node, ...props}) => <ul className="list-disc list-inside" {...props} />,
       </CardContent>
       <CardFooter className="p-2 border-t">
         <div className="relative w-full">
+          {isUploading && (
+            <div className="mb-2 flex items-center gap-3 rounded-md border bg-secondary/40 px-3 py-2 text-xs text-muted-foreground">
+              <LoaderCircle className="h-4 w-4 animate-spin" />
+              <div className="flex-1">
+                <p className="font-medium text-foreground">Đang tải tài liệu...</p>
+                <Progress value={uploadProgress ?? 0} className="mt-1 h-1.5" />
+              </div>
+            </div>
+          )}
           {documentName && (
             <div className="text-xs px-2 py-1 mb-1.5 bg-secondary rounded-full flex items-center justify-between max-w-[calc(100%-1rem)]">
               <span className="truncate">Hỏi về: <strong>{documentName}</strong></span>
@@ -232,6 +259,11 @@ ul: ({node, ...props}) => <ul className="list-disc list-inside" {...props} />,
                 <X className="h-3 w-3"/>
                 <span className="sr-only">Bỏ tài liệu</span>
               </Button>
+            </div>
+          )}
+          {documentRequiresReload && (
+            <div className="mb-2 rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-xs text-destructive">
+              Tài liệu đã được lưu offline. Hãy tải lại tệp để tiếp tục đặt câu hỏi về nội dung này.
             </div>
           )}
           <form
@@ -249,7 +281,7 @@ ul: ({node, ...props}) => <ul className="list-disc list-inside" {...props} />,
                   handleFormSubmit(e as any);
                 }
               }}
-              disabled={isLoading}
+              disabled={isLoading || isUploading || documentRequiresReload}
               rows={1}
             />
              <input
@@ -257,13 +289,13 @@ ul: ({node, ...props}) => <ul className="list-disc list-inside" {...props} />,
               ref={fileInputRef}
               onChange={onFileChange}
               className="hidden"
-              accept=".txt,.md"
+              accept=".txt,.pdf"
             />
             <div className="absolute right-2 top-1/2 -translate-y-1/2 flex gap-1">
                <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Button type="button" variant="ghost" size="icon" className="h-8 w-8" onClick={() => fileInputRef.current?.click()} disabled={isLoading}>
+                    <Button type="button" variant="ghost" size="icon" className="h-8 w-8" onClick={() => fileInputRef.current?.click()} disabled={isLoading || isUploading}>
                       <Paperclip className="h-4 w-4"/>
                       <span className="sr-only">Áp tài liệu</span>
                     </Button>
@@ -278,7 +310,7 @@ ul: ({node, ...props}) => <ul className="list-disc list-inside" {...props} />,
                 type="submit"
                 size="icon"
                 className="h-8 w-8"
-                disabled={isLoading || !question.trim()}
+                disabled={isLoading || isUploading || documentRequiresReload || !question.trim()}
               >
                 <Send className="h-4 w-4" />
                 <span className="sr-only">Gửi</span>
