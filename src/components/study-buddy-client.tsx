@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useCallback, useRef } from 'react';
+import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import {
   BookOpen,
   Calculator,
@@ -20,6 +20,7 @@ import {
   ClipboardList,
   ArrowLeft,
   Upload,
+  LoaderCircle,
 } from 'lucide-react';
 import type { EducationLevel, Grade, Subject, QuizData, Message } from '@/lib/types';
 import { getQuiz, getTutorResponse, getQuestionSuggestions } from '@/app/actions';
@@ -30,6 +31,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import QuizView from '@/components/quiz-view';
 import ChatView from '@/components/chat-view';
 import { Separator } from './ui/separator';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Progress } from '@/components/ui/progress';
 
 // Data definitions
 const educationLevels: { value: EducationLevel; label: string }[] = [
@@ -88,6 +91,22 @@ const subjectMap: Record<EducationLevel, Subject[]> = {
 
 type Step = 'level' | 'grade' | 'subject' | 'mode' | 'chat' | 'quiz';
 
+type StoredProgress = {
+  selectedLevel: EducationLevel | null;
+  selectedGrade: string | null;
+  selectedSubject: string | null;
+  documentContent: string | null;
+  documentName: string | null;
+  chatMessages: Message[];
+  step: Step;
+  timestamp: number;
+  documentTooLarge?: boolean;
+};
+
+const STORAGE_KEY = 'studybuddy-progress';
+const MAX_PERSISTED_DOCUMENT_CHARS = 100_000;
+const MAX_PERSISTED_MESSAGES = 50;
+
 export default function StudyBuddyClient() {
   const [step, setStep] = useState<Step>('level');
   
@@ -99,12 +118,76 @@ export default function StudyBuddyClient() {
   const [isChatLoading, setChatLoading] = useState(false);
   const [documentContent, setDocumentContent] = useState<string | null>(null);
   const [documentName, setDocumentName] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState<number | null>(null);
+  const [savedProgress, setSavedProgress] = useState<StoredProgress | null>(null);
 
   const [quizData, setQuizData] = useState<QuizData | null>(null);
   const [isQuizLoading, setQuizLoading] = useState(false);
 
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const savedProgressLabel = useMemo(() => {
+    // Derive a friendly label for the saved session banner, preferring document name when available.
+    if (!savedProgress) return null;
+    if (savedProgress.documentName) {
+      return savedProgress.documentName;
+    }
+
+    if (savedProgress.selectedSubject && savedProgress.selectedLevel) {
+      const subjectList = subjectMap[savedProgress.selectedLevel];
+      const match = subjectList.find(subject => subject.value === savedProgress.selectedSubject);
+      if (match) {
+        return match.label;
+      }
+    }
+
+    return savedProgress.selectedSubject ?? 'StudyBuddy AI';
+  }, [savedProgress]);
+
+  useEffect(() => {
+    // Restore any stored progress so returning learners can pick up their last conversation automatically.
+    if (typeof window === 'undefined') return;
+    const stored = window.localStorage.getItem(STORAGE_KEY);
+    if (!stored) return;
+
+    try {
+      const parsed = JSON.parse(stored) as StoredProgress;
+      setSavedProgress(parsed);
+    } catch (error) {
+      window.localStorage.removeItem(STORAGE_KEY);
+    }
+  }, []);
+
+  useEffect(() => {
+    // Persist the active learning session so reloads keep chat history and document context intact while capping payload size.
+    if (typeof window === 'undefined') return;
+
+    if (!selectedLevel || !selectedSubject) {
+      window.localStorage.removeItem(STORAGE_KEY);
+      return;
+    }
+
+    const trimmedMessages = chatMessages.slice(-MAX_PERSISTED_MESSAGES);
+    const isDocumentTooLarge = typeof documentContent === 'string' && documentContent.length > MAX_PERSISTED_DOCUMENT_CHARS;
+    const persistedDocument = isDocumentTooLarge ? null : documentContent;
+
+    const payload: StoredProgress = {
+      selectedLevel,
+      selectedGrade,
+      selectedSubject,
+      documentContent: persistedDocument,
+      documentName,
+      chatMessages: trimmedMessages,
+      step,
+      timestamp: Date.now(),
+      documentTooLarge: isDocumentTooLarge,
+    };
+
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+    setSavedProgress(payload);
+  }, [selectedLevel, selectedGrade, selectedSubject, documentContent, documentName, chatMessages, step]);
 
   const availableGrades = useMemo(() => {
     if (!selectedLevel) return [];
@@ -207,28 +290,141 @@ export default function StudyBuddyClient() {
     }
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file && selectedLevel) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const content = event.target?.result as string;
-        setDocumentContent(content);
-        setDocumentName(file.name);
-        // Create a temporary subject for the custom document
-        setSelectedSubject(file.name); 
-        setChatMessages([]);
-        setStep('chat');
-        toast({
-          title: "Tài liệu đã được tải lên",
-          description: `Bây giờ bạn có thể hỏi về nội dung của "${file.name}".`,
-        });
-      };
-      reader.readAsText(file);
+  const handleContinueProgress = useCallback(() => {
+    // Allow learners to resume a saved session, restoring chat state and context in one click while warning about truncated docs.
+    if (!savedProgress) return;
+
+    if (savedProgress.selectedLevel) {
+      setSelectedLevel(savedProgress.selectedLevel);
     }
-    // Reset file input to allow uploading the same file again
-    e.target.value = '';
-  };
+    setSelectedGrade(savedProgress.selectedGrade);
+    setSelectedSubject(savedProgress.selectedSubject);
+
+    const shouldWarnAboutDocument =
+      savedProgress.selectedSubject === 'custom' && (!savedProgress.documentContent || savedProgress.documentTooLarge);
+
+    if (shouldWarnAboutDocument) {
+      toast({
+        variant: 'destructive',
+        title: 'Tài liệu cần được tải lại',
+        description: 'Nội dung tài liệu quá lớn để lưu trữ an toàn. Vui lòng tải lại tệp để tiếp tục.',
+      });
+      setSelectedSubject(null);
+      setDocumentContent(null);
+      setDocumentName(null);
+      setChatMessages([]);
+      setStep('subject');
+      setSavedProgress(null);
+      return;
+    }
+
+    setDocumentContent(savedProgress.documentContent);
+    setDocumentName(savedProgress.documentName);
+    setChatMessages(savedProgress.chatMessages || []);
+    setStep(savedProgress.step || 'chat');
+    setSavedProgress(null);
+  }, [savedProgress, toast]);
+
+  const handleFileChange = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+    // Harden document ingestion by validating and streaming uploads to the FastAPI backend.
+    const file = e.target.files?.[0];
+    if (!file) {
+      e.target.value = '';
+      return;
+    }
+
+    if (!selectedLevel) {
+      toast({
+        variant: 'destructive',
+        title: 'Chưa chọn cấp học',
+        description: 'Vui lòng chọn cấp học và môn trước khi tải tài liệu.',
+      });
+      e.target.value = '';
+      return;
+    }
+
+    const maxSize = 5 * 1024 * 1024;
+    if (file.size > maxSize) {
+      toast({
+        variant: 'destructive',
+        title: 'Tệp quá lớn',
+        description: 'Vui lòng chọn tệp nhỏ hơn 5MB để tránh treo trình duyệt.',
+      });
+      e.target.value = '';
+      return;
+    }
+
+    const allowedTypes = ['text/plain', 'application/pdf'];
+    const fallbackType = file.name.toLowerCase().endsWith('.pdf')
+      ? 'application/pdf'
+      : file.name.toLowerCase().endsWith('.txt')
+        ? 'text/plain'
+        : '';
+    const fileType = file.type || fallbackType;
+
+    if (!allowedTypes.includes(fileType)) {
+      toast({
+        variant: 'destructive',
+        title: 'Định dạng không được hỗ trợ',
+        description: 'Chỉ hỗ trợ tệp PDF hoặc TXT để đảm bảo an toàn.',
+      });
+      e.target.value = '';
+      return;
+    }
+
+    const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      setIsUploading(true);
+      setUploadProgress(0);
+
+      const payload = await new Promise<{ content: string; name: string }>((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', `${baseUrl.replace(/\/$/, '')}/upload`);
+        xhr.responseType = 'json';
+        xhr.upload.onprogress = (event) => {
+          if (event.lengthComputable) {
+            const percent = Math.round((event.loaded / event.total) * 100);
+            setUploadProgress(percent);
+          }
+        };
+        xhr.onload = () => {
+          if (xhr.status >= 200 && xhr.status < 300) {
+            const response = xhr.response as { content?: string; name?: string; detail?: string };
+            if (response?.content && response?.name) {
+              resolve({ content: response.content, name: response.name });
+            } else {
+              reject(new Error(response?.detail || 'Máy chủ không trả về nội dung hợp lệ.'));
+            }
+          } else {
+            const response = xhr.response as { detail?: string } | null;
+            reject(new Error(response?.detail || 'Tải tài liệu thất bại.'));
+          }
+        };
+        xhr.onerror = () => reject(new Error('Không thể kết nối tới máy chủ tải lên.'));
+        xhr.send(formData);
+      });
+
+      setDocumentContent(payload.content);
+      setDocumentName(payload.name);
+      setSelectedSubject('custom');
+      setChatMessages([]);
+      setStep('chat');
+      toast({
+        title: 'Tài liệu đã được tải lên',
+        description: `Bây giờ bạn có thể hỏi về nội dung của "${payload.name}".`,
+      });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Không thể tải tài liệu.';
+      toast({ variant: 'destructive', title: 'Tải lên thất bại', description: message });
+    } finally {
+      setIsUploading(false);
+      setUploadProgress(null);
+      e.target.value = '';
+    }
+  }, [selectedLevel, toast]);
 
   const handleClearDocument = () => {
     setDocumentContent(null);
@@ -242,6 +438,16 @@ export default function StudyBuddyClient() {
   const handleQuestionSubmit = useCallback(
     async (question: string) => {
       if (isChatLoading || !selectedLevel || !selectedSubject) return;
+
+      if (selectedSubject === 'custom' && !documentContent) {
+        // Guard against missing document content when resuming a custom upload so learners re-upload explicitly.
+        toast({
+          variant: 'destructive',
+          title: 'Cần tải lại tài liệu',
+          description: 'Phiên trò chuyện này được liên kết với tài liệu tùy chỉnh. Hãy tải lại tệp trước khi tiếp tục hỏi.',
+        });
+        return;
+      }
 
       setChatLoading(true);
       const userMessage: Message = { id: `user-${Date.now()}`, role: 'user', content: question };
@@ -364,12 +570,31 @@ export default function StudyBuddyClient() {
                     ref={fileInputRef}
                     onChange={handleFileChange}
                     className="hidden"
-                    accept=".txt,.md"
+                    accept=".txt,.pdf"
                 />
-                <Button variant="secondary" className="w-full" onClick={() => fileInputRef.current?.click()}>
-                    <Upload className="mr-2 h-4 w-4" />
-                    Tải lên tài liệu riêng...
-                </Button>
+                <div className="w-full">
+                  <Button
+                    variant="secondary"
+                    className="w-full"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={isUploading}
+                  >
+                    {isUploading ? (
+                      <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />
+                    ) : (
+                      <Upload className="mr-2 h-4 w-4" />
+                    )}
+                    {isUploading ? 'Đang tải tài liệu...' : 'Tải lên tài liệu riêng...'}
+                  </Button>
+                  {isUploading && (
+                    <div className="mt-2 space-y-1">
+                      <Progress value={uploadProgress ?? 0} className="h-2" />
+                      <p className="text-xs text-muted-foreground">
+                        {uploadProgress ? `Đang tải lên ${uploadProgress}%` : 'Đang tải lên tài liệu...'}
+                      </p>
+                    </div>
+                  )}
+                </div>
              </CardFooter>
           </Card>
         );
@@ -418,6 +643,8 @@ export default function StudyBuddyClient() {
                     onSubmit={handleQuestionSubmit}
                     onSuggestQuestions={handleSuggestQuestions}
                     onFileChange={handleFileChange}
+                    isUploading={isUploading}
+                    uploadProgress={uploadProgress}
                     onClearDocument={handleClearDocument}
                 />
                )}
@@ -464,6 +691,18 @@ export default function StudyBuddyClient() {
 
   return (
     <div className="h-full w-full flex flex-col items-center justify-center p-4">
+        {isSelectionStep && savedProgress && (
+          <Alert className="mb-6 max-w-2xl">
+            <AlertTitle>Tiếp tục học?</AlertTitle>
+            <AlertDescription>
+              Bạn có một phiên học gần đây với {savedProgressLabel ?? 'StudyBuddy AI'}. Bấm tiếp tục để khôi phục lịch sử trò chuyện.
+            </AlertDescription>
+            <div className="mt-4 flex gap-2">
+              <Button onClick={handleContinueProgress}>Tiếp tục học</Button>
+              <Button variant="ghost" onClick={() => setSavedProgress(null)}>Bỏ qua</Button>
+            </div>
+          </Alert>
+        )}
         {isSelectionStep && (
             <div className="flex items-center gap-2 mb-8">
                 <BrainCircuit className="h-8 w-8 text-primary" />

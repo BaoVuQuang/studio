@@ -1,50 +1,78 @@
 # Firebase Studio - StudyBuddy AI
 
-Đây là một ứng dụng Next.js được phát triển trong Firebase Studio, đóng vai trò như một trợ lý học tập được hỗ trợ bởi AI.
+Ứng dụng StudyBuddy là trợ lý học tập chạy trên Next.js, được hỗ trợ bởi Genkit và một dịch vụ FastAPI để xử lý việc tải tài liệu an toàn. Dự án bao gồm:
 
-Để bắt đầu, hãy xem qua tệp `src/app/page.tsx`.
+- **Frontend**: Next.js 15 với App Router.
+- **AI Worker**: Genkit flows sử dụng Gemini.
+- **Document API**: FastAPI đảm nhận kiểm tra tệp, trích xuất nội dung và logging có cấu trúc.
 
 ## Chạy ứng dụng trên máy cục bộ (Running Locally)
 
-Bạn hoàn toàn có thể chạy và phát triển ứng dụng này trên máy tính của mình. Dưới đây là các bước cần thiết:
+Các bước dưới đây hướng dẫn thiết lập đầy đủ ba tiến trình bắt buộc: FastAPI, Genkit và Next.js.
 
 ### Yêu cầu
-- [Node.js](https://nodejs.org/) (phiên bản 18 trở lên)
-- [npm](https://www.npmjs.com/) (thường đi kèm với Node.js)
+- [Node.js](https://nodejs.org/) **>= 18** cùng `npm`
+- [Python](https://www.python.org/) **>= 3.10** (khuyến nghị tạo virtualenv riêng)
 
-### 1. Cài đặt các gói phụ thuộc (Dependencies)
-Mở một cửa sổ dòng lệnh (terminal) trong thư mục gốc của dự án và chạy lệnh sau:
+### 1. Cài đặt phụ thuộc cho Next.js
+Ở thư mục gốc của dự án:
+
 ```bash
 npm install
 ```
 
-### 2. Thiết lập Biến môi trường (Environment Variables)
-Để các tính năng AI hoạt động, bạn cần cung cấp khóa API Gemini của mình.
+### 2. Cài đặt phụ thuộc cho FastAPI
+Tạo môi trường ảo và cài đặt thư viện Python:
 
-1.  Tạo một tệp mới ở thư mục gốc của dự án và đặt tên là `.env.local`.
-2.  Thêm nội dung sau vào tệp, thay thế `your_api_key_here` bằng khóa API thực của bạn:
-    ```
-    GEMINI_API_KEY=your_api_key_here
-    ```
+```bash
+python -m venv .venv
+source .venv/bin/activate  # Windows dùng .venv\Scripts\activate
+pip install -r backend/requirements.txt
+```
 
-### 3. Chạy ứng dụng
-Ứng dụng này yêu cầu hai tiến trình phải chạy song song. Bạn sẽ cần mở **hai cửa sổ dòng lệnh (terminal)** riêng biệt.
+> Ghi chú: Giữ terminal này với virtualenv đang kích hoạt để dùng ở bước khởi chạy FastAPI.
 
-**Trong Terminal 1 - Chạy máy chủ Genkit (AI Backend):**
+### 3. Thiết lập biến môi trường
+Tạo tệp `.env.local` tại thư mục gốc và thêm cấu hình tối thiểu:
+
+```bash
+GEMINI_API_KEY=your_api_key_here
+NEXT_PUBLIC_API_BASE_URL=http://localhost:8000
+```
+
+- `GEMINI_API_KEY` dùng cho các flow Genkit.
+- `NEXT_PUBLIC_API_BASE_URL` trỏ đến dịch vụ FastAPI; có thể bỏ qua nếu dùng mặc định `http://localhost:8000`.
+- (Tuỳ chọn) Đặt `CHROMA_DATA_DIR=/absolute/path/to/data/chroma` nếu muốn phục vụ knowledge base từ vị trí khác.
+
+### 4. Khởi chạy các dịch vụ
+Mỗi dịch vụ nên chạy ở một terminal riêng:
+
+**Terminal 1 – FastAPI (xử lý upload an toàn)**
+```bash
+uvicorn main:app --app-dir backend --port 8000 --reload
+```
+API cung cấp `POST /upload` (giới hạn 5MB, kiểm tra MIME) và `GET /healthz` để kiểm tra trạng thái.
+
+**Terminal 2 – Genkit (AI flows)**
 ```bash
 npm run genkit:dev
 ```
-Lệnh này sẽ khởi động máy chủ Genkit, nơi xử lý các yêu cầu đến các mô hình AI. Hãy giữ cho terminal này luôn chạy.
+Giữ tiến trình này luôn mở để server actions có thể truy cập Gemini qua Genkit.
 
-**Trong Terminal 2 - Chạy ứng dụng Next.js (Giao diện người dùng):**
+**Terminal 3 – Next.js frontend**
 ```bash
 npm run dev
 ```
-Lệnh này sẽ khởi động máy chủ phát triển của Next.js.
+Frontend chạy tại [http://localhost:9002](http://localhost:9002).
 
-### 4. Truy cập ứng dụng
-Sau khi cả hai máy chủ đã khởi động thành công, bạn có thể mở trình duyệt và truy cập vào địa chỉ sau để xem ứng dụng:
+### 5. Làm việc với knowledge base động
+- Ứng dụng đọc nội dung kiến thức trực tiếp từ các tệp JSON trong `data/chroma`. Chỉnh sửa nội dung ở đây sẽ phản ánh ngay lập tức mà không cần build lại.
+- Nếu thay đổi nguồn TypeScript gốc trong `src/lib/knowledge-base/**`, hãy xuất lại JSON và áp dụng script enrich:
+  ```bash
+  npx tsx scripts/export-knowledge.ts
+  node scripts/enrich-knowledge.mjs
+  ```
+  Lệnh đầu tiên sinh tệp thô, lệnh thứ hai bổ sung "Hướng dẫn tự học" và "Lộ trình luyện đề" tránh trùng lặp.
 
-[http://localhost:9002](http://localhost:9002)
+Hoàn thành các bước trên, bạn có thể mở trình duyệt và bắt đầu tương tác với StudyBuddy ngay trên máy cục bộ của mình.
 
-Bây giờ bạn đã có thể tương tác và tiếp tục phát triển ứng dụng trên chính máy tính của mình!
