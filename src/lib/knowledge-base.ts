@@ -24,9 +24,9 @@ export function getKnowledgeBase(
     return undefined;
   }
 
-  // For THPT, try to find a grade-specific knowledge base first.
+  // For THCS or THPT, try to find a grade-specific knowledge base first.
   // e.g., if subject is 'math' and grade is '10', look for 'math-10'.
-  if (level === 'thpt' && grade) {
+  if ((level === 'thpt' || level === 'thcs') && grade) {
     const gradeSpecificKey = `${subject}-${grade}`;
     if (gradeSpecificKey in baseForLevel) {
       return baseForLevel[gradeSpecificKey as keyof typeof baseForLevel];
