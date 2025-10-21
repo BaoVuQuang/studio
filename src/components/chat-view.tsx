@@ -20,6 +20,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Textarea } from '@/components/ui/textarea';
 import { Separator } from '@/components/ui/separator';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Progress } from '@/components/ui/progress';
 
 import type { Message, Subject } from '@/lib/types';
 import { cn } from '@/lib/utils';
@@ -33,6 +34,8 @@ interface ChatViewProps {
   onSubmit: (question: string) => Promise<void>;
   onSuggestQuestions: (messageId: string, question: string) => Promise<void>;
   onFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  isUploading: boolean;
+  uploadProgress: number | null;
   onClearDocument: () => void;
 }
 
@@ -44,6 +47,8 @@ export default function ChatView({
   onSubmit,
   onSuggestQuestions,
   onFileChange,
+  isUploading,
+  uploadProgress,
   onClearDocument,
 }: ChatViewProps) {
   const [question, setQuestion] = useState('');
@@ -60,11 +65,13 @@ export default function ChatView({
   }, [messages]);
 
   const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    // Block submissions while uploads are running to keep chat history in sync with the new document.
     e.preventDefault();
-    if (question.trim()) {
-      onSubmit(question);
-      setQuestion('');
+    if (isUploading || !question.trim()) {
+      return;
     }
+    onSubmit(question);
+    setQuestion('');
   };
   
   const handleSuggestionClick = (suggestedQuestion: string) => {
@@ -225,6 +232,15 @@ ul: ({node, ...props}) => <ul className="list-disc list-inside" {...props} />,
       </CardContent>
       <CardFooter className="p-2 border-t">
         <div className="relative w-full">
+          {isUploading && (
+            <div className="mb-2 flex items-center gap-3 rounded-md border bg-secondary/40 px-3 py-2 text-xs text-muted-foreground">
+              <LoaderCircle className="h-4 w-4 animate-spin" />
+              <div className="flex-1">
+                <p className="font-medium text-foreground">Đang tải tài liệu...</p>
+                <Progress value={uploadProgress ?? 0} className="mt-1 h-1.5" />
+              </div>
+            </div>
+          )}
           {documentName && (
             <div className="text-xs px-2 py-1 mb-1.5 bg-secondary rounded-full flex items-center justify-between max-w-[calc(100%-1rem)]">
               <span className="truncate">Hỏi về: <strong>{documentName}</strong></span>
@@ -249,7 +265,7 @@ ul: ({node, ...props}) => <ul className="list-disc list-inside" {...props} />,
                   handleFormSubmit(e as any);
                 }
               }}
-              disabled={isLoading}
+              disabled={isLoading || isUploading}
               rows={1}
             />
              <input
@@ -257,13 +273,13 @@ ul: ({node, ...props}) => <ul className="list-disc list-inside" {...props} />,
               ref={fileInputRef}
               onChange={onFileChange}
               className="hidden"
-              accept=".txt,.md"
+              accept=".txt,.pdf"
             />
             <div className="absolute right-2 top-1/2 -translate-y-1/2 flex gap-1">
                <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Button type="button" variant="ghost" size="icon" className="h-8 w-8" onClick={() => fileInputRef.current?.click()} disabled={isLoading}>
+                    <Button type="button" variant="ghost" size="icon" className="h-8 w-8" onClick={() => fileInputRef.current?.click()} disabled={isLoading || isUploading}>
                       <Paperclip className="h-4 w-4"/>
                       <span className="sr-only">Áp tài liệu</span>
                     </Button>
@@ -278,7 +294,7 @@ ul: ({node, ...props}) => <ul className="list-disc list-inside" {...props} />,
                 type="submit"
                 size="icon"
                 className="h-8 w-8"
-                disabled={isLoading || !question.trim()}
+                disabled={isLoading || isUploading || !question.trim()}
               >
                 <Send className="h-4 w-4" />
                 <span className="sr-only">Gửi</span>

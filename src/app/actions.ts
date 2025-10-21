@@ -1,4 +1,3 @@
-
 'use server';
 
 import { providePersonalizedTutoring, type ProvidePersonalizedTutoringInput } from '@/ai/flows/provide-personalized-tutoring';
@@ -7,12 +6,13 @@ import { generateQuiz } from '@/ai/flows/generate-quiz';
 import { getKnowledgeBase } from '@/lib/knowledge-base';
 import type { EducationLevel, QuizData } from '@/lib/types';
 
+// Updated to await the lazy knowledge base loader so the server action always sees fresh subject data.
 export async function getTutorResponse(level: EducationLevel, grade: string | undefined, subject: string, question: string, documentContent: string | null) {
   try {
     // If user uploaded a document, use its content as knowledge base.
     // Otherwise, find the knowledge base for the selected subject.
-    const knowledgeBase = documentContent ?? getKnowledgeBase(level, subject, grade);
-    
+    const knowledgeBase = documentContent ?? await getKnowledgeBase(level, subject, grade);
+
     const input: ProvidePersonalizedTutoringInput = { subject, question };
     // Only add knowledgeBase to input if it exists, to avoid errors with undefined values
     if (knowledgeBase) {
@@ -20,9 +20,9 @@ export async function getTutorResponse(level: EducationLevel, grade: string | un
     }
 
     const response = await providePersonalizedTutoring(input);
-    
+
     const content = (response.explanation && response.explanation.trim() !== '') ? response.explanation : response.answer;
-    
+
     return { success: true, content: content };
   } catch (error) {
     console.error(error);
@@ -46,9 +46,10 @@ export async function getQuestionSuggestions(topic: string, question: string) {
   }
 }
 
+// Updated to fetch contextual knowledge lazily so quiz generation follows the new JSON data pipeline.
 export async function getQuiz(level: EducationLevel, subject: string, grade: string | undefined): Promise<{ success: boolean; data?: QuizData; error?: string }> {
   try {
-    const context = getKnowledgeBase(level, subject, grade);
+    const context = await getKnowledgeBase(level, subject, grade);
     if (!context) {
       return {
         success: false,
@@ -67,5 +68,3 @@ export async function getQuiz(level: EducationLevel, subject: string, grade: str
     };
   }
 }
-
-    
